@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <Description>egginc.tools hub: landing page for the Egg, Inc. tool suite, per-tool status, shared sign-in state.</Description>
+    <RootNamespace>EggIncTools.Web</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <UserSecretsId>ca4368bc-fcf6-45ea-9f91-4e76253c4961</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="EggIdentity.Auth" />
+    <PackageReference Include="EggIdentity.Contract" />
+    <PackageReference Include="EggIdentity.Deploy" />
+    <PackageReference Include="EggIdentity.Fallback" />
+    <PackageReference Include="EggIdentity.Icons" />
+    <PackageReference Include="EggIdentity.Resilience" />
+    <PackageReference Include="EggIdentity.Settings" />
+    <PackageReference Include="EggIdentity.Settings.Store" />
+    <PackageReference Include="EggIdentity.UI" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EggIncTools.Shell\EggIncTools.Shell.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EggIncTools.Web.CssBuild\EggIncTools.Web.CssBuild.csproj" ReferenceOutputAssembly="false" Private="false" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\styles.css" />
+    <Content Include="wwwroot\styles.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_StylesInput Include="Styles\app.css" />
+    <_StylesInput Include="**\*.razor;**\*.razor.cs" Exclude="bin\**;obj\**;Tests\**" />
+    <_StylesInput Include="..\EggIncTools.Shell\**\*.razor;..\EggIncTools.Shell\**\*.razor.cs" />
+  </ItemGroup>
+
+  <Target Name="ResolveCssBuildPath" DependsOnTargets="ResolveProjectReferences">
+    <ItemGroup>
+      <_CssBuildProject Include="@(ProjectReference)" Condition="'%(Filename)' == 'EggIncTools.Web.CssBuild'" />
+    </ItemGroup>
+    <MSBuild Projects="@(_CssBuildProject)" Targets="GetTargetPath" Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" PropertyName="_CssBuildDll" />
+    </MSBuild>
+    <PropertyGroup>
+      <_CssBuildDotnet>$(DOTNET_HOST_PATH)</_CssBuildDotnet>
+      <_CssBuildDotnet Condition="'$(_CssBuildDotnet)' == ''">dotnet</_CssBuildDotnet>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="BuildCss"
+          AfterTargets="ResolveProjectReferences"
+          DependsOnTargets="ResolveCssBuildPath"
+          Condition="'$(BuildHubCss)' != 'false' And '$(DesignTimeBuild)' != 'true'"
+          Inputs="@(_StylesInput);$(_CssBuildDll)"
+          Outputs="$(MSBuildProjectDirectory)\wwwroot\styles.css">
+    <Exec Command="&quot;$(_CssBuildDotnet)&quot; &quot;$(_CssBuildDll)&quot; &quot;$(MSBuildProjectDirectory)&quot;" />
+  </Target>
+
+</Project>

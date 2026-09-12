@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+.git/
+.github/
+docs/
+dist/
+*.md
+**/*.user
+EggIncTools.Web/Tests/

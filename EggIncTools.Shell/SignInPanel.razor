@@ -1,0 +1,27 @@
+<div class="eit-login">
+    <span class="eit-login-label">Sign in with:</span>
+    <span class="eit-login-rule" aria-hidden="true"></span>
+    <div class="eit-providers">
+        @foreach (var provider in ToolCatalog.Providers) {
+            var label = Label(provider);
+            <a class="eit-provider eit-provider-@provider" href="@ToolCatalog.ProviderSignInUrl(provider, Return)"
+               rel="nofollow" title="@label" aria-label="Sign in with @label">
+                <ProviderMark Provider="@provider"/>
+                <span class="eit-provider-name">@label</span>
+            </a>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? ReturnUrl { get; set; }
+
+    private string Return => ReturnUrl is { Length: > 0 } url ? url : ToolCatalog.HubUrl;
+
+    private static string Label(string provider) =>
+        provider switch {
+            "github" => "GitHub",
+            "microsoft" => "Microsoft",
+            _ => char.ToUpperInvariant(provider[0]) + provider[1..],
+        };
+}

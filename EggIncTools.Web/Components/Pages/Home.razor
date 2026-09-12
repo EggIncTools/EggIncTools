@@ -1,0 +1,140 @@
+@page "/"
+@implements IDisposable
+@inject IServiceProvider Services
+
+<ToolsHeader Active="hub" Tools="@_tools" ReturnUrl="@ToolCatalog.HubUrl" ShowSignIn="@(!HubOnly)"/>
+
+<main class="hub">
+    <div class="hub-quads">
+        @foreach (var tool in _tools) {
+            var health = _status?.For(tool.Slug);
+            <section class="quad quad-@tool.Slug @(tool.Live ? "" : "quad-soon")" style="--tool: @tool.Accent">
+                <div class="quad-inner">
+                    @if (!tool.Live) {
+                        <span class="quad-soon-tag">Coming soon</span>
+                        <ConstructionEgg/>
+                        <ConstructionLadder/>
+                    }
+                    <div class="quad-body">
+                    <div class="quad-head">
+                        <img class="quad-mark" src="@tool.IconUrl" alt="" width="512" height="512" style="@tool.MarkStyle"/>
+                        @if (tool.Live) {
+                            <a class="quad-name" href="@tool.Url">
+                                <span class="quad-name-text">@tool.Name</span>
+                                <Icon Name="external-link" Class="quad-name-out"/>
+                            </a>
+                        } else {
+                            <span class="quad-name">
+                                <span class="quad-name-text">@tool.Name</span>
+                            </span>
+                        }
+                    </div>
+
+                    @if (tool.Live) {
+                        <ul class="quad-points">
+                            @foreach (var point in tool.Points) {
+                                <li>@point</li>
+                            }
+                        </ul>
+                    } else {
+                        <div class="quad-pitch">
+                            @foreach (var line in ObfuscatedLines) {
+                                <ObfuscatedText Pattern="@line" Announce="@($"{tool.Name} is not announced yet")"/>
+                            }
+                        </div>
+                    }
+
+                    @if (health is { State: not ToolState.Unknown } state) {
+                        <div class="quad-foot">
+                            <span class="quad-state quad-state-@state.State.ToString().ToLowerInvariant()">@state.Label</span>
+                            @if (state.RunningVersion is { Length: > 0 } version) {
+                                <span class="quad-version">@version</span>
+                            }
+                        </div>
+                    }
+                    </div>
+                </div>
+            </section>
+        }
+
+        <div class="hub-core">
+            <h1 class="hub-title">EggInc<span class="hub-title-dot">.</span>tools</h1>
+
+            <p class="hub-by">
+                <span class="hub-by-label">Proudly presented by</span>
+                <a class="hub-chip hub-chip-org" href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">
+                    <img class="hub-chip-mark" src="@ToolCatalog.HubIconUrl(512)" alt="" width="512" height="512"/>
+                    <span class="hub-chip-name">EggIncTools</span>
+                </a>
+                <span class="hub-by-amp">&amp;</span>
+                <a class="hub-chip hub-chip-author" href="@ToolCatalog.AuthorUrl" target="_blank" rel="noopener">
+                    <Icon Name="brand-github" Class="hub-chip-icon"/>
+                    <span class="hub-chip-name">@ToolCatalog.AuthorName</span>
+                </a>
+            </p>
+
+            <a class="hub-invite" href="@ToolCatalog.DiscordUrl" target="_blank" rel="noopener">
+                <img class="hub-invite-mark" src="@ToolCatalog.DiscordIconUrl" alt="" width="64" height="64" loading="lazy"/>
+                <span class="hub-invite-body">
+                    <span class="hub-invite-sub">@ToolCatalog.DiscordName</span>
+                    <span class="hub-invite-name">Join the Discord Server</span>
+                    <span class="hub-invite-points">
+                        <span>General discussion &amp; tool support</span>
+                        <span>Notifications for protos/game changes</span>
+                        <span>Discord features for supported apps</span>
+                    </span>
+                </span>
+                <span class="hub-invite-cta">Join<Icon Name="arrow-right" Class="hub-invite-go"/></span>
+            </a>
+        </div>
+    </div>
+
+    <footer class="hub-foot">
+        <nav class="hub-foot-links">
+            <button type="button" @onclick="@(() => _legal = "privacy")">
+                <Icon Name="file-text" Class="icon-xs"/>Privacy
+            </button>
+            <button type="button" @onclick="@(() => _legal = "terms")">
+                <Icon Name="file-text" Class="icon-xs"/>Terms
+            </button>
+        </nav>
+        <p class="hub-disclaimer">
+            <span>Independent, fan-made, and not affiliated with, endorsed by, or sponsored by Auxbrain Inc.</span>
+            <span>Egg, Inc. and related marks are the property of their respective owners.</span>
+        </p>
+    </footer>
+</main>
+
+<LegalModal Kind="@_legal" OnKindChange="@(kind => _legal = kind)" OnClose="@(() => _legal = null)"/>
+
+@code {
+    private static readonly string[] ObfuscatedLines = [
+        "xxxxxxx xxxxx xxxxx xxx xxxxxx xxxxx xxxx",
+        "xxxxxxx xxxx xxxxxx xxxxx xxx xxxxxxxx",
+    ];
+
+    private IReadOnlyList<ToolEntry> _tools = ToolCatalog.All;
+    private string? _legal;
+    private ToolStatusService? _status;
+
+    private bool HubOnly => Services.GetRequiredService<HostConfig>().HubOnly;
+
+    protected override void OnInitialized() {
+        _status = Services.GetService<ToolStatusService>();
+        if (_status is not null) _status.Changed += OnStatusChanged;
+    }
+
+    protected override async Task OnInitializedAsync() {
+        if (Services.GetService<ToolRegistry>() is { } registry) {
+            _tools = await registry.ToolsAsync();
+        }
+    }
+
+    public void Dispose() {
+        if (_status is not null) _status.Changed -= OnStatusChanged;
+    }
+
+    private void OnStatusChanged() {
+        _ = InvokeAsync(StateHasChanged);
+    }
+}

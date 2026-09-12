@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <Description>Build-time CSS compiler for EggIncTools.Web. Scans the hub and the shell RCL for class tokens, compiles wwwroot/styles.css via MonorailCss and EggIdentity.Styles.</Description>
+    <RootNamespace>EggIncTools.Web.CssBuild</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MonorailCss" />
+    <PackageReference Include="EggIdentity.Styles" />
+    <PackageReference Include="EggIdentity.Fallback" />
+  </ItemGroup>
+
+</Project>

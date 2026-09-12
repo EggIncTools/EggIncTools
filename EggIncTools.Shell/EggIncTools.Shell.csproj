@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <Description>Shared shell for the egginc.tools suite: cross-tool header, tool catalog and sign-in panel. MIT covers this package's own code. Brand art is depended on via EggIdentity.Brand and keeps that package's reserved terms.</Description>
+    <RootNamespace>EggIncTools.Shell</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EggIdentity.Brand" />
+    <PackageReference Include="EggIdentity.Contract" />
+    <PackageReference Include="EggIdentity.UI" />
+  </ItemGroup>
+
+</Project>

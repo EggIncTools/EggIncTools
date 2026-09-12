@@ -1,0 +1,47 @@
+<section class="prose-legal prose-legal-section">
+    <h2>What this is</h2>
+    <p>
+        EggInc.tools is a landing page for a set of Egg, Inc. fan tools built by one person. It hosts no
+        game data of its own; it links to the tools and shows which version each one is running. It is
+        not a game client, a cheat, or a service operated by the developer of Egg, Inc.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Each tool has its own terms</h2>
+    <p>
+        Following a link out of this page puts you under that tool's terms and privacy policy. Nothing
+        here overrides them.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Provided as-is, no warranty</h2>
+    <p>
+        Source is available at
+        <a href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">github.com/EggIncTools</a>.
+        Both it and the hosted instance are offered "as is", without warranty of any kind, express or
+        implied. There is no guarantee that any of it will be available, uninterrupted, or accurate.
+        Use it at your own risk.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Acceptable use</h2>
+    <p>
+        Do not attempt to break, overload, or gain unauthorized access to the hub or the tools behind
+        it. Automated traffic that degrades the service for others may be blocked.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Changes</h2>
+    <p>
+        These terms may change as the suite changes. The date at the top is the last revision. See also
+        <button type="button" class="legal-link-btn" @onclick="OnOpenPrivacy">Privacy &amp; Cookies</button>.
+    </p>
+</section>
+
+@code {
+    [Parameter] public EventCallback OnOpenPrivacy { get; set; }
+}

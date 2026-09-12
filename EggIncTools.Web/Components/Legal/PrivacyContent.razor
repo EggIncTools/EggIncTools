@@ -1,0 +1,47 @@
+<section class="prose-legal prose-legal-section">
+    <h2>What this covers</h2>
+    <p>
+        EggInc.tools is the front door to a suite of Egg, Inc. fan tools. This covers the hub itself.
+        Each tool has its own privacy policy covering the data that tool stores.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>What the hub stores</h2>
+    <p>
+        Nothing about you. The hub keeps no account records, no analytics, and no per-visitor logs
+        beyond the transient request logs any web server writes.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Cookies</h2>
+    <p>
+        The hub sets no cookies of its own. It reads one cookie if it is already present: the shared
+        sign-in cookie issued by EggIdentity, which is how the header can show your name instead of a
+        sign-in link. That cookie is scoped to the parent domain so a single sign-in works across every
+        tool. The Sign out link in the header clears it.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>What the hub asks other services</h2>
+    <p>
+        To show the version each tool is running, the server asks the shared deploy agent on a timer.
+        Those requests come from the server, not from your browser, and carry nothing about you.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Contact</h2>
+    <p>
+        The hosted instance is run by an individual, David Cole, not a company. Source is at
+        <a href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">github.com/EggIncTools</a>.
+        See also the
+        <button type="button" class="legal-link-btn" @onclick="OnOpenTerms">Terms of Service</button>.
+    </p>
+</section>
+
+@code {
+    [Parameter] public EventCallback OnOpenTerms { get; set; }
+}

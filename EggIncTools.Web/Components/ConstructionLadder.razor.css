@@ -1,0 +1,10 @@
+.quad-soon-ladder {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    width: clamp(4rem, 10cqi, 8.5rem);
+    height: auto;
+    pointer-events: none;
+    image-rendering: pixelated;
+}

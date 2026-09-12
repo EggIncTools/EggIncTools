@@ -1,0 +1,59 @@
+
+<header class="eit-bar">
+    <a class="eit-brand" href="@ToolCatalog.HubUrl">
+        <img class="eit-mark" src="@MarkUrl" alt="" width="512" height="512" loading="lazy"/>
+        <span class="eit-wordmark">EggInc<span class="eit-wordmark-dot">.</span>tools</span>
+    </a>
+
+    <nav class="eit-nav">
+        @foreach (var tool in Tools ?? ToolCatalog.All) {
+            var current = string.Equals(tool.Slug, Active, StringComparison.OrdinalIgnoreCase);
+            if (tool.Live) {
+                <a class="eit-nav-link @(current ? "eit-nav-current" : "")"
+                   href="@tool.Url"
+                   style="--tool: @tool.Accent"
+                   aria-current="@(current ? "page" : null)">
+                    <img class="eit-nav-mark" src="@tool.IconUrl" alt="" width="512" height="512" style="@tool.MarkStyle" loading="lazy"/>
+                    <span class="eit-nav-text">@tool.Name</span>
+                </a>
+            } else {
+                <span class="eit-nav-link eit-nav-soon" style="--tool: @tool.Accent"
+                      role="link" aria-disabled="true">
+                    <img class="eit-nav-mark" src="@tool.IconUrl" alt="" width="512" height="512" style="@tool.MarkStyle" loading="lazy"/>
+                    <span class="eit-nav-text">@tool.Name</span>
+                    <span class="eit-nav-said">, coming soon</span>
+                    <span class="eit-nav-tip" aria-hidden="true">Coming soon</span>
+                </span>
+            }
+        }
+    </nav>
+
+    @if (ShowSignIn) {
+        <div class="eit-account">
+            <AuthorizeView>
+                <Authorized>
+                    <span class="eit-user">@context.User.Identity?.Name</span>
+                    <a class="eit-btn eit-btn-quiet" href="@SignOutUrl">Sign out</a>
+                </Authorized>
+                <NotAuthorized>
+                    <SignInPanel ReturnUrl="@ReturnUrl"/>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    }
+</header>
+
+@code {
+    [Parameter] public string? Active { get; set; }
+
+    [Parameter] public IReadOnlyList<ToolEntry>? Tools { get; set; }
+
+    [Parameter] public string MarkUrl { get; set; } = ToolCatalog.HubIconUrl(512);
+
+    [Parameter] public string? ReturnUrl { get; set; }
+
+    [Parameter] public bool ShowSignIn { get; set; } = true;
+
+    private string SignOutUrl =>
+        ToolCatalog.SignOutUrlFor(ReturnUrl is { Length: > 0 } url ? url : ToolCatalog.HubUrl);
+}

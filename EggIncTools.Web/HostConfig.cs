@@ -1,0 +1,33 @@
+using EggIdentity.Auth;
+
+namespace EggIncTools.Web;
+
+public sealed class HostConfig {
+    public required string? ConnString { get; init; }
+    public required bool HubOnly { get; init; }
+    public required ushort Port { get; init; }
+    public SessionCookieOptions? SessionOptions { get; init; }
+    public bool AuthEnabled => !HubOnly && SessionOptions is not null;
+
+    public bool DatabaseEnabled => ConnString is { Length: > 0 };
+
+    public static HostConfig FromEnvironment() {
+        var hubOnly = Environment.GetEnvironmentVariable(HubSettings.HubOnlyEnv) is { } flag
+            && (flag.Equals("true", StringComparison.OrdinalIgnoreCase) || flag == "1");
+
+        var connString = Environment.GetEnvironmentVariable(HubSettings.ConnStringEnv);
+        if (!hubOnly && string.IsNullOrEmpty(connString)) {
+            throw new InvalidOperationException(
+                $"{HubSettings.ConnStringEnv} is required unless {HubSettings.HubOnlyEnv} is set");
+        }
+
+        return new HostConfig {
+            ConnString = connString,
+            HubOnly = hubOnly,
+            Port = ushort.TryParse(Environment.GetEnvironmentVariable(HubSettings.PortEnv), out var port) && port > 0
+                ? port
+                : HubSettings.DefaultPort,
+            SessionOptions = SessionCookieOptions.FromEnvironment(),
+        };
+    }
+}

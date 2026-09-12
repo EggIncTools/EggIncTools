@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  packages: write
+  actions: write
+
+jobs:
+  pack:
+    uses: EggIncTools/EggIdentity/.github/workflows/nuget-publish.yml@main
+    with:
+      dotnet-version: "10.0.x"
+      packages-auth: true
+      pack-targets: |
+        EggIncTools.Shell/EggIncTools.Shell.csproj
+    secrets:
+      PACKAGES_PAT: ${{ secrets.PACKAGES_PAT }}
+
+  docker-web:
+    uses: EggIncTools/EggIdentity/.github/workflows/docker-publish.yml@main
+    permissions:
+      contents: read
+      packages: write
+      actions: write
+    with:
+      image-suffix: ""
+      context: .
+      dockerfile: EggIncTools.Web/Dockerfile
+      needs-pat: true
+      build-args: GITHUB_PACKAGES_USER=${{ github.actor }}
+      cache-scope: web
+    secrets:
+      PACKAGES_PAT: ${{ secrets.PACKAGES_PAT }}
+
+  notify-web:
+    needs: docker-web
+    uses: EggIncTools/EggIdentity/.github/workflows/notify-agent.yml@main
+    with:
+      app: egginctools
+      agent-url: https://egghook.davidarthurcole.me/agent
+      digest: ${{ needs.docker-web.outputs.digest }}
+      revision: ${{ github.sha }}
+      version: ${{ github.ref_name }}
+    secrets:
+      hook-secret: ${{ secrets.DEPLOY_HOOK_SECRET }}

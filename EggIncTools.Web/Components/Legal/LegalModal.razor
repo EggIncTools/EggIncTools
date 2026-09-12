@@ -1,0 +1,30 @@
+<ModalHost Open="@(Kind is not null)" Title="@Title" TitleId="legalModalTitle"
+           Width="ModalWidth.Large" OnClose="OnClose">
+    <div class="modal-body">
+        <p class="prose-legal-updated">Last updated @Updated</p>
+
+        <div class="legal-disclaimer">
+            EggInc.tools, like every tool it links to, is an independent, fan-made project and is not
+            affiliated with, endorsed by, or sponsored by Auxbrain Inc. Egg, Inc. and related marks are
+            the property of their respective owners.
+        </div>
+
+        @if (Kind == "privacy") {
+            <PrivacyContent OnOpenTerms="@(() => OnKindChange.InvokeAsync("terms"))"/>
+        } else if (Kind == "terms") {
+            <TermsContent OnOpenPrivacy="@(() => OnKindChange.InvokeAsync("privacy"))"/>
+        }
+    </div>
+</ModalHost>
+
+@code {
+    public const string Updated = "10 September 2026";
+
+    [Parameter] public string? Kind { get; set; }
+
+    [Parameter] public EventCallback<string> OnKindChange { get; set; }
+
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private string Title => Kind == "terms" ? "Terms of Service" : "Privacy & Cookies";
+}

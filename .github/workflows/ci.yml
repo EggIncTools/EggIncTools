@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build-test:
+    uses: EggIncTools/EggIdentity/.github/workflows/dotnet-ci.yml@main
+    with:
+      solution: EggIncTools.slnx
+      packages-auth: true
+      format-gate: true
+    secrets:
+      PACKAGES_PAT: ${{ secrets.PACKAGES_PAT }}
+
+  seed-image-cache:
+    if: github.event_name == 'push'
+    uses: EggIncTools/EggIdentity/.github/workflows/docker-publish.yml@main
+    permissions:
+      contents: read
+      packages: write
+    with:
+      push: false
+      dockerfile: EggIncTools.Web/Dockerfile
+      needs-pat: true
+      build-args: GITHUB_PACKAGES_USER=${{ github.actor }}
+      cache-scope: web
+    secrets:
+      PACKAGES_PAT: ${{ secrets.PACKAGES_PAT }}

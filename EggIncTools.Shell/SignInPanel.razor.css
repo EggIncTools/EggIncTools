@@ -1,0 +1,118 @@
+.eit-login {
+    display: inline-flex;
+    align-items: stretch;
+}
+
+.eit-login .eit-provider:first-child {
+    padding-left: 0.6rem;
+}
+
+.eit-login .eit-provider:last-child {
+    padding-right: 1.1rem;
+}
+
+.eit-login-label {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-muted);
+    font-size: 0.9em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.eit-login-rule {
+    width: 1px;
+    margin-left: 0.6rem;
+    background: var(--color-border);
+}
+
+.eit-providers {
+    display: flex;
+    align-items: stretch;
+    gap: 0.2rem;
+}
+
+.eit-provider {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding-inline: 0.6rem;
+    color: var(--brand, var(--color-fg));
+    font-weight: 600;
+    font-synthesis-weight: none;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.eit-provider-name {
+    position: relative;
+    padding-block: 0.15em;
+}
+
+.eit-provider-name::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--brand-rule, var(--brand, var(--color-fg)));
+    opacity: 0.55;
+}
+
+.eit-provider:hover {
+    background: color-mix(in oklab, var(--brand, var(--color-fg)) 16%, transparent);
+}
+
+.eit-provider:hover .eit-provider-name::after {
+    opacity: 1;
+}
+
+.eit-provider ::deep .icon,
+.eit-provider ::deep .eit-mark-svg {
+    flex: none;
+    width: 1.5em;
+    height: 1.5em;
+    color: var(--brand, currentColor);
+}
+
+.eit-provider-discord {
+    --brand: var(--color-accent2);
+}
+
+.eit-provider-github {
+    --brand: #a371f7;
+    --brand-rule: linear-gradient(90deg, var(--color-fg) 0%, #a371f7 100%);
+}
+
+.eit-provider-github:hover {
+    background: color-mix(in oklab, #a371f7 22%, transparent);
+}
+
+.eit-provider-google {
+    --brand: #4285f4;
+    --brand-rule: linear-gradient(90deg, #4285f4 0%, #ea4335 34%, #fbbc05 67%, #34a853 100%);
+}
+
+.eit-provider-microsoft {
+    --brand: #c8ccd4;
+    --brand-rule: linear-gradient(90deg, #f25022 0%, #7fba00 34%, #00a4ef 67%, #ffb900 100%);
+}
+
+@media (max-width: 48rem) {
+    .eit-login-label,
+    .eit-login-rule {
+        display: none;
+    }
+
+    .eit-provider-name {
+        display: none;
+    }
+
+    .eit-provider {
+        padding-inline: 0.4rem;
+    }
+}
