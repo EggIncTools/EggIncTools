@@ -1,6 +1,6 @@
 @implements IDisposable
 
-<span class="quad-obfuscated" role="img" aria-label="@Announce" style="width: @(Pattern.Length)ch">@foreach (var run in _runs) {
+<span class="quad-obfuscated" role="img" aria-label="@Announce" style="--glyphs: @Pattern.Length">@foreach (var run in _runs) {
         if (run.Color is null) {
             @run.Text
         } else {

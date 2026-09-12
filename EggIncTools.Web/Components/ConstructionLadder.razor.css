@@ -11,6 +11,6 @@
 
 @media (max-width: 48rem) {
     .quad-soon-ladder {
-        width: clamp(2.25rem, 12vw, 3.75rem);
+        width: clamp(0.9rem, 5vw, 1.5rem);
     }
 }

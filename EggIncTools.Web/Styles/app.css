@@ -15,6 +15,15 @@
     overflow: hidden;
   }
 
+  @media (max-width: 48rem) {
+    html,
+    body {
+      height: auto;
+      min-height: 100%;
+      overflow: visible;
+    }
+  }
+
   body {
     margin: 0;
     display: flex;

@@ -515,7 +515,9 @@ a.quad-name:hover ::deep .quad-name-out {
 @media (max-width: 48rem) {
     .hub {
         grid-template-rows: auto auto;
-        overflow-y: auto;
+        flex: none;
+        min-height: 0;
+        overflow: visible;
     }
 
     .hub-quads {
@@ -560,7 +562,4 @@ a.quad-name:hover ::deep .quad-name-out {
         padding: 1.35rem 1rem 1rem;
     }
 
-    .quad-pitch {
-        font-size: clamp(0.6rem, 2.9vw, 0.95rem);
-    }
 }

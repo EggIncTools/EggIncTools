@@ -10,7 +10,7 @@
 
 @media (max-width: 48rem) {
     .quad-soon-egg {
-        width: clamp(3rem, 17vw, 5rem);
+        width: clamp(1.25rem, 7vw, 2rem);
     }
 }
 
