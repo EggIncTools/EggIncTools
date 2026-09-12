@@ -11,21 +11,14 @@
     <link rel="canonical" href="@Origin"/>
     <meta name="theme-color" content="#0b0d12"/>
     <meta property="og:type" content="website"/>
-    <meta property="og:site_name" content="EggInc.tools"/>
-    <meta property="og:locale" content="en_US"/>
     <meta property="og:url" content="@Origin"/>
     <meta property="og:title" content="EggInc.tools"/>
     <meta property="og:description" content="@Description"/>
-    <meta property="og:image" content="@($"{Origin}/brand/og.png")"/>
+    <meta property="og:image" content="@($"{Origin}/{ToolCatalog.HubIconUrl(512)}")"/>
     <meta property="og:image:type" content="image/png"/>
-    <meta property="og:image:width" content="1200"/>
-    <meta property="og:image:height" content="630"/>
-    <meta property="og:image:alt" content="@ImageAlt"/>
-    <meta name="twitter:card" content="summary_large_image"/>
-    <meta name="twitter:title" content="EggInc.tools"/>
-    <meta name="twitter:description" content="@Description"/>
-    <meta name="twitter:image" content="@($"{Origin}/brand/og.png")"/>
-    <meta name="twitter:image:alt" content="@ImageAlt"/>
+    <meta property="og:image:width" content="512"/>
+    <meta property="og:image:height" content="512"/>
+    <meta name="twitter:card" content="summary"/>
     <link rel="stylesheet" href="/styles.css"/>
     <link rel="stylesheet" href="/EggIncTools.Web.styles.css"/>
     <HeadOutlet @rendermode="@RenderMode"/>
@@ -54,8 +47,6 @@
 @code {
     private const string Description =
         "Egg, Inc. fan tools: mission history and drops, game data, and boost math.";
-
-    private const string ImageAlt = "The EggInc.tools front door, with EggInc.tools lettered beside it.";
 
     private static readonly InteractiveServerRenderMode RenderMode = new(prerender: true);
 
