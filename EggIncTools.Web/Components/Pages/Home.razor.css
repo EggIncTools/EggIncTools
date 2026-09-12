@@ -521,7 +521,7 @@ a.quad-name:hover ::deep .quad-name-out {
     .hub-quads {
         grid-template-columns: 1fr;
         grid-template-rows: none;
-        grid-auto-rows: min-content;
+        grid-auto-rows: auto;
     }
 
     .quad,
@@ -546,11 +546,21 @@ a.quad-name:hover ::deep .quad-name-out {
         position: static;
         transform: none;
         width: 100%;
+        max-width: none;
         gap: 0.7rem;
         margin-inline: auto;
+        order: -1;
     }
 
     .hub-title {
         font-size: clamp(2rem, 11vw, 3rem);
+    }
+
+    .quad-soon .quad-inner {
+        padding: 1.35rem 1rem 1rem;
+    }
+
+    .quad-pitch {
+        font-size: clamp(0.6rem, 2.9vw, 0.95rem);
     }
 }
