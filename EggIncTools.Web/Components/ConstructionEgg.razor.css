@@ -8,7 +8,7 @@
     pointer-events: none;
 }
 
-@media (max-width: 48rem) {
+@media (max-width: 48rem), (max-height: 34rem) {
     .quad-soon-egg {
         width: clamp(1.25rem, 7vw, 2rem);
     }

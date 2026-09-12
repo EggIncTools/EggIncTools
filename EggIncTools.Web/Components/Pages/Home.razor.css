@@ -506,13 +506,13 @@ a.quad-name:hover ::deep .quad-name-out {
     white-space: nowrap;
 }
 
-@media (max-width: 60rem) {
+@media (max-width: 60rem), (max-height: 34rem) {
     .hub-disclaimer span {
         white-space: normal;
     }
 }
 
-@media (max-width: 48rem) {
+@media (max-width: 48rem), (max-height: 34rem) {
     .hub {
         grid-template-rows: auto auto;
         flex: none;
@@ -538,10 +538,17 @@ a.quad-name:hover ::deep .quad-name-out {
         grid-column: auto;
     }
 
+    .quad-inner,
+    .quad-incognito .quad-inner {
+        width: 100%;
+        align-items: flex-start;
+    }
+
     .quad-abacus .quad-inner,
     .quad-abacus .quad-body {
-        text-align: left;
-        align-items: flex-start;
+        width: 100%;
+        text-align: center;
+        align-items: center;
     }
 
     .hub-core {

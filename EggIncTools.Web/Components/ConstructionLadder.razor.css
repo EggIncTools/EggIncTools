@@ -9,7 +9,7 @@
     image-rendering: pixelated;
 }
 
-@media (max-width: 48rem) {
+@media (max-width: 48rem), (max-height: 34rem) {
     .quad-soon-ladder {
         width: clamp(0.9rem, 5vw, 1.5rem);
     }

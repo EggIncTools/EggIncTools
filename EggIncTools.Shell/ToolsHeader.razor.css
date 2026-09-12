@@ -43,6 +43,7 @@
 .eit-nav {
     display: flex;
     align-items: stretch;
+    flex: 0 1 auto;
     min-width: 0;
     background: var(--color-panel);
     border-inline: 1px solid var(--color-border);
@@ -50,9 +51,14 @@
 
 .eit-nav-link {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.5em;
+    justify-content: center;
+    align-content: center;
+    gap: 0.15em 0.5em;
+    min-width: 0;
     padding-inline: 0.95rem;
+    padding-block: 0.3rem;
     color: var(--tool, var(--color-accent));
     text-decoration: none;
     white-space: nowrap;
@@ -227,23 +233,6 @@
     background: var(--color-panel2);
 }
 
-@media (min-width: 44.001rem) and (max-width: 52rem) {
-    .eit-nav-text {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip-path: inset(50%);
-        white-space: nowrap;
-    }
-
-    .eit-nav-link {
-        padding-inline: 0.4rem;
-    }
-}
-
 @media (max-width: 44rem) {
     .eit-bar {
         flex-wrap: wrap;
@@ -272,24 +261,12 @@
 
     .eit-nav-link {
         flex: 1;
-        justify-content: center;
-        padding-block: 0.5rem;
-    }
-}
-
-@media (max-width: 30rem) {
-    .eit-wordmark {
-        display: none;
+        padding-inline: 0.4rem;
+        padding-block: 0.45rem;
+        font-size: 0.85em;
     }
 
-    .eit-nav-text {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip-path: inset(50%);
-        white-space: nowrap;
+    .eit-nav-soon {
+        margin-left: 0;
     }
 }

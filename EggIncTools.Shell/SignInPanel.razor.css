@@ -102,7 +102,7 @@
     --brand-rule: linear-gradient(90deg, #f25022 0%, #7fba00 34%, #00a4ef 67%, #ffb900 100%);
 }
 
-@media (max-width: 48rem) {
+@media (max-width: 48rem), (max-height: 34rem) {
     .eit-login-label,
     .eit-login-rule {
         display: none;
