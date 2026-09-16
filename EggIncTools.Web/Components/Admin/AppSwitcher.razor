@@ -3,11 +3,12 @@
 <div class="asw" role="group" aria-label="Choose an app to administer">
     @foreach (var status in Apps) {
         var selected = string.Equals(status.App, Selected, StringComparison.Ordinal);
-        <button type="button" class="@Css(status, selected)" disabled="@(!status.Administrable)"
+        var enabled = Enabled(status);
+        <button type="button" class="@Css(enabled, selected)" disabled="@(!enabled)"
                 title="@status.Unavailable" aria-current="@(selected ? "true" : null)"
                 @onclick="@(() => OnSelect.InvokeAsync(status.App))">
             <span class="asw-name">@status.App</span>
-            @if (!status.Administrable) {
+            @if (!enabled) {
                 <Icon Name="lock" Class="icon-sm"/>
             }
         </button>
@@ -26,12 +27,16 @@
     [Parameter] public IReadOnlyList<AdminTargetStatus> Apps { get; set; } = [];
     [Parameter] public string? Selected { get; set; }
     [Parameter] public EventCallback<string> OnSelect { get; set; }
+    [Parameter] public string? LocalApp { get; set; }
 
     private IReadOnlyList<AdminTargetStatus> Unavailable =>
-        [.. Apps.Where(a => !a.Administrable)];
+        [.. Apps.Where(a => !Enabled(a) && a.Unavailable is { Length: > 0 })];
 
-    private static string Css(AdminTargetStatus status, bool selected) {
-        if (!status.Administrable) return "asw-tab asw-tab-off";
+    private bool Enabled(AdminTargetStatus status) =>
+        status.Administrable || string.Equals(status.App, LocalApp, StringComparison.Ordinal);
+
+    private static string Css(bool enabled, bool selected) {
+        if (!enabled) return "asw-tab asw-tab-off";
         return selected ? "asw-tab asw-tab-on" : "asw-tab";
     }
 }

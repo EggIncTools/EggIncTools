@@ -27,9 +27,6 @@
                 <button type="button" class="@ModeCss(Mode.App)" @onclick="@(() => _mode = Mode.App)">One app</button>
                 <button type="button" class="@ModeCss(Mode.Compare)" @onclick="ShowComparisonAsync">Compare all</button>
                 <button type="button" class="@ModeCss(Mode.Promote)" @onclick="@(() => _mode = Mode.Promote)">Promote</button>
-                @if (_hasLocalSettings) {
-                    <button type="button" class="@ModeCss(Mode.Hub)" @onclick="@(() => _mode = Mode.Hub)">This hub</button>
-                }
                 <button type="button" class="btn-mini" disabled="@_busy" @onclick="ReloadAsync">
                     <Icon Name="refresh" Class="icon-sm"/>Reload
                 </button>
@@ -38,15 +35,10 @@
 
         @if (_mode == Mode.Promote) {
             <PromotionPanel UpdatedBy="@_userId"/>
-        } else if (_mode == Mode.Hub) {
-            <SettingsPanel UpdatedBy="@_userId" InitialSelection="@AdminTargets.Key"/>
         } else if (_apps.Count == 0) {
             <p class="wb-note">
-                No admin targets are configured. Add rows to the admin.targets collection
-                @if (_hasLocalSettings) {
-                    <text>under </text><button type="button" class="btn-mini" @onclick="@(() => _mode = Mode.Hub)">This hub</button><text>, </text>
-                }
-                then set ADMIN_SECRET_&lt;NAME&gt; on this host for each one.
+                No admin targets are configured. Add rows to the admin.targets collection, then set
+                ADMIN_SECRET_&lt;NAME&gt; on this host for each one.
             </p>
         } else if (_mode == Mode.Compare) {
             <span class="adm-sub">Read-only across apps. Pick an app above to change anything.</span>
@@ -56,8 +48,12 @@
                 <SettingsComparisonPane Report="@_report"/>
             }
         } else {
-            <AppSwitcher Apps="@_apps" Selected="@_selected" OnSelect="Select"/>
-            <AppSettingsPane Status="@Current" UpdatedBy="@_userId"/>
+            <AppSwitcher Apps="@_apps" Selected="@_selected" OnSelect="Select" LocalApp="@LocalApp"/>
+            @if (IsLocal) {
+                <SettingsPanel UpdatedBy="@_userId" InitialSelection="@AdminTargets.Key"/>
+            } else {
+                <AppSettingsPane Status="@Current" UpdatedBy="@_userId"/>
+            }
         }
     </main>
 }
@@ -67,8 +63,9 @@
         App,
         Compare,
         Promote,
-        Hub,
     }
+
+    private const string LocalAppName = "EggIncTools";
 
     [CascadingParameter] private Task<AuthenticationState>? AuthStateTask { get; set; }
 
@@ -82,6 +79,10 @@
     private string? _selected;
     private IReadOnlyList<AdminTargetStatus> _apps = [];
     private ComparisonReport? _report;
+
+    private string? LocalApp => _hasLocalSettings ? LocalAppName : null;
+
+    private bool IsLocal => _hasLocalSettings && string.Equals(_selected, LocalAppName, StringComparison.Ordinal);
 
     private string AdminUrl =>
         Nav.ToAbsoluteUri($"/auth/redeem?returnUrl={Uri.EscapeDataString(Nav.ToAbsoluteUri("/admin").ToString())}").ToString();
@@ -112,19 +113,27 @@
             _apps = await targets.StatusesAsync(ct: CancellationToken.None);
         }
 
-        _selected = _apps.FirstOrDefault(a => a.Administrable)?.App;
+        _apps = WithLocal(_apps);
+        _selected = LocalApp ?? _apps.FirstOrDefault(a => a.Administrable)?.App;
     }
 
     private void Select(string app) => _selected = app;
+
+    private IReadOnlyList<AdminTargetStatus> WithLocal(IReadOnlyList<AdminTargetStatus> apps) {
+        if (!_hasLocalSettings) return apps;
+
+        var local = new AdminTargetStatus(LocalAppName, AdminTargets.SecretEnvKey(LocalAppName), false, null);
+        return [local, .. apps.Where(a => !string.Equals(a.App, LocalAppName, StringComparison.OrdinalIgnoreCase))];
+    }
 
     private async Task ReloadAsync() {
         _busy = true;
         try {
             if (Services.GetService<AdminTargetsService>() is { } targets) {
-                _apps = await targets.StatusesAsync(refresh: true, ct: CancellationToken.None);
+                _apps = WithLocal(await targets.StatusesAsync(refresh: true, ct: CancellationToken.None));
             }
 
-            if (Current is null) _selected = _apps.FirstOrDefault(a => a.Administrable)?.App;
+            if (!IsLocal && Current is null) _selected = LocalApp ?? _apps.FirstOrDefault(a => a.Administrable)?.App;
 
             _report = null;
             if (_mode == Mode.Compare) await ShowComparisonAsync();
