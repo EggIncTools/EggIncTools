@@ -71,7 +71,8 @@
     private IReadOnlyList<AdminTargetStatus> _apps = [];
     private ComparisonReport? _report;
 
-    private string AdminUrl => Nav.ToAbsoluteUri("/admin").ToString();
+    private string AdminUrl =>
+        Nav.ToAbsoluteUri($"/auth/redeem?returnUrl={Uri.EscapeDataString(Nav.ToAbsoluteUri("/admin").ToString())}").ToString();
 
     private AdminTargetStatus? Current =>
         _apps.FirstOrDefault(a => string.Equals(a.App, _selected, StringComparison.Ordinal));

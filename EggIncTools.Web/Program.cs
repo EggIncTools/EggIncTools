@@ -1,4 +1,5 @@
 using EggIdentity.Auth;
+using EggIdentity.Client;
 using EggIdentity.Fallback;
 using EggIdentity.Settings.Store;
 using EggIncTools.Shell;
@@ -75,6 +76,26 @@ public static class Program {
                 SessionIssuer.ClearCookie(ctx.Response, session);
                 return Results.Redirect("/admin?rejected=1");
             });
+
+            app.MapGet("/auth/redeem", async (
+                string? code, string? returnUrl, HttpContext ctx, IdentityApiClient identity, CancellationToken ct) => {
+                    var target = ToolCatalog.IsAllowedReturn(returnUrl) ? returnUrl! : "/admin";
+                    if (string.IsNullOrEmpty(code)) return Results.Redirect(target);
+
+                    try {
+                        var user = await identity.RedeemAsync(code, ct);
+                        SessionIssuer.IssueCookie(
+                            ctx.Response, session,
+                            new SessionUser(user.UserId.ToString(), null, user.Role, user.Username, user.Avatar, user.DiscordId),
+                            TimeProvider.System.GetUtcNow());
+                    } catch (Exception exc) when (exc is HttpRequestException or TaskCanceledException) {
+                        app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Redeem")
+                            .LogWarning(exc, "could not redeem a login code against the identity API");
+                        return Results.Redirect("/admin?signin=failed");
+                    }
+
+                    return Results.Redirect(target);
+                });
         }
 
         if (config.DatabaseEnabled) {
