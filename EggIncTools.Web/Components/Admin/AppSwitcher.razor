@@ -1,0 +1,37 @@
+@using EggIdentity.Settings.Api
+
+<div class="asw" role="group" aria-label="Choose an app to administer">
+    @foreach (var status in Apps) {
+        var selected = string.Equals(status.App, Selected, StringComparison.Ordinal);
+        <button type="button" class="@Css(status, selected)" disabled="@(!status.Administrable)"
+                title="@status.Unavailable" aria-current="@(selected ? "true" : null)"
+                @onclick="@(() => OnSelect.InvokeAsync(status.App))">
+            <span class="asw-name">@status.App</span>
+            @if (!status.Administrable) {
+                <Icon Name="lock" Class="icon-sm"/>
+            }
+        </button>
+    }
+</div>
+
+@if (Unavailable is { Count: > 0 }) {
+    <ul class="asw-why">
+        @foreach (var status in Unavailable) {
+            <li><span class="asw-why-app">@status.App</span>@status.Unavailable</li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter] public IReadOnlyList<AdminTargetStatus> Apps { get; set; } = [];
+    [Parameter] public string? Selected { get; set; }
+    [Parameter] public EventCallback<string> OnSelect { get; set; }
+
+    private IReadOnlyList<AdminTargetStatus> Unavailable =>
+        [.. Apps.Where(a => !a.Administrable)];
+
+    private static string Css(AdminTargetStatus status, bool selected) {
+        if (!status.Administrable) return "asw-tab asw-tab-off";
+        return selected ? "asw-tab asw-tab-on" : "asw-tab";
+    }
+}

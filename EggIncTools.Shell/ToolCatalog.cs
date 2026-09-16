@@ -25,8 +25,26 @@ public sealed record ToolEntry(
 public static class ToolCatalog {
     public const string HubHost = "egginc.tools";
     public const string HubUrl = $"https://{HubHost}";
-    public const string IdentityOrigin = "https://eggidentity.davidarthurcole.me";
-    public const string SignOutUrl = $"{IdentityOrigin}/auth/logout";
+    public const string IdentityOriginEnv = "IDENTITY_WIDGET_URL";
+    public const string DefaultIdentityOrigin = "https://eggidentity.egginc.tools";
+
+    public static IReadOnlyList<string> ReturnHosts { get; } = [HubHost];
+
+    public static Action<string>? OnReturnRejected { get; set; }
+
+    public static string IdentityOrigin { get; } = ResolveIdentityOrigin();
+
+    public static string SignOutUrl => $"{IdentityOrigin}/auth/logout";
+
+    private static string ResolveIdentityOrigin() {
+        var raw = Environment.GetEnvironmentVariable(IdentityOriginEnv)?.Trim().TrimEnd('/');
+        if (string.IsNullOrEmpty(raw)) return DefaultIdentityOrigin;
+
+        return Uri.TryCreate(raw, UriKind.Absolute, out var parsed)
+            && (parsed.Scheme == Uri.UriSchemeHttps || parsed.IsLoopback)
+            ? raw
+            : DefaultIdentityOrigin;
+    }
     public const string DiscordUrl = $"https://discord.{HubHost}";
     public const string GitHubUrl = "https://github.com/EggIncTools";
     public const string AuthorUrl = "https://github.com/DavidArthurCole";
@@ -96,11 +114,19 @@ public static class ToolCatalog {
     public static bool IsAllowedReturn(string? returnUrl) =>
         Uri.TryCreate(returnUrl, UriKind.Absolute, out var parsed)
         && (parsed.Scheme == Uri.UriSchemeHttps || parsed.IsLoopback)
-        && (parsed.IsLoopback
-            || parsed.Host.Equals(HubHost, StringComparison.OrdinalIgnoreCase)
-            || parsed.Host.EndsWith($".{HubHost}", StringComparison.OrdinalIgnoreCase));
+        && (parsed.IsLoopback || ReturnHosts.Any(host => IsHostOrSubdomain(parsed.Host, host)));
 
-    private static string SafeReturn(string returnUrl) => IsAllowedReturn(returnUrl) ? returnUrl : HubUrl;
+    private static bool IsHostOrSubdomain(string candidate, string parent) =>
+        candidate.Equals(parent, StringComparison.OrdinalIgnoreCase)
+        || candidate.EndsWith($".{parent}", StringComparison.OrdinalIgnoreCase);
+
+    private static string SafeReturn(string returnUrl) {
+        if (IsAllowedReturn(returnUrl)) return returnUrl;
+
+        OnReturnRejected?.Invoke(
+            Uri.TryCreate(returnUrl, UriKind.Absolute, out var parsed) ? parsed.Host : "(not an absolute url)");
+        return HubUrl;
+    }
 
     public static ToolEntry? Find(string? slug) =>
         slug is null ? null : All.FirstOrDefault(t => string.Equals(t.Slug, slug, StringComparison.OrdinalIgnoreCase));

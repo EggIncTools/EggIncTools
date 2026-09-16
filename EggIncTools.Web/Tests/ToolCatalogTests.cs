@@ -79,6 +79,7 @@ public class ToolCatalogTests {
     [InlineData("https://egginc.tools")]
     [InlineData("https://egginc.tools/some/path")]
     [InlineData("https://eggledger.egginc.tools/")]
+    [InlineData("https://tools.egginc.tools/signed-in")]
     [InlineData("http://localhost:8090/")]
     public void AllowedReturnsSurviveTheRoundTrip(string returnUrl) {
         Assert.True(ToolCatalog.IsAllowedReturn(returnUrl));
@@ -89,6 +90,7 @@ public class ToolCatalogTests {
     [InlineData("https://evil.example")]
     [InlineData("https://egginc.tools.evil.example")]
     [InlineData("https://evilegginc.tools")]
+    [InlineData("https://evil.example/?x=egginc.tools")]
     [InlineData("https://egginc.tools@evil.example")]
     [InlineData("http://egginc.tools")]
     [InlineData("//evil.example")]
@@ -104,6 +106,28 @@ public class ToolCatalogTests {
                 $"returnUrl={Uri.EscapeDataString(ToolCatalog.HubUrl)}",
                 ToolCatalog.ProviderSignInUrl(provider, returnUrl),
                 StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void ARejectedReturnIsReportedRatherThanSilentlyRewritten() {
+        var seen = new List<string>();
+        var previous = ToolCatalog.OnReturnRejected;
+        ToolCatalog.OnReturnRejected = host => seen.Add(host);
+        try {
+            ToolCatalog.SignOutUrlFor("https://evil.example/landing");
+            ToolCatalog.SignOutUrlFor("https://tools.egginc.tools/ok");
+        } finally {
+            ToolCatalog.OnReturnRejected = previous;
+        }
+
+        Assert.Equal(["evil.example"], seen);
+    }
+
+    [Fact]
+    public void EveryReturnHostIsSelfAccepted() {
+        Assert.Equal([ToolCatalog.HubHost], ToolCatalog.ReturnHosts);
+        Assert.All(ToolCatalog.ReturnHosts, host =>
+            Assert.True(ToolCatalog.IsAllowedReturn($"https://{host}/")));
     }
 
     [Fact]

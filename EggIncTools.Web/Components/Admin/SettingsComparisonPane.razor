@@ -1,0 +1,106 @@
+@using EggIdentity.Settings.Api
+
+<div class="cmp">
+    <div class="cmp-apps">
+        @foreach (var app in Report.Apps) {
+            <span class="@(app.Ok ? "badge badge-ok" : "badge badge-muted cmp-app-off")"
+                  title="@(app.Ok ? null : app.Unavailable)">
+                @app.App
+                @if (!app.Ok) {
+                    <Icon Name="lock" Class="icon-sm"/>
+                }
+            </span>
+        }
+    </div>
+
+    @{
+        var unavailable = Report.Apps.Where(a => !a.Ok).ToList();
+    }
+    @if (unavailable.Count > 0) {
+        <ul class="cmp-why">
+            @foreach (var app in unavailable) {
+                <li><span class="cmp-why-app">@app.App</span>@app.Unavailable</li>
+            }
+        </ul>
+    }
+
+    <div class="cmp-tools">
+        <input class="form-input cmp-search" type="search" placeholder="Filter by key or label"
+               value="@_query" @oninput="@(e => _query = e.Value?.ToString() ?? "")"/>
+        <label class="cmp-only">
+            <input type="checkbox" checked="@_divergentOnly" @onchange="@(e => _divergentOnly = e.Value is true)"/>
+            Differs across apps
+        </label>
+        <span class="cmp-count">@Visible.Count of @Report.Rows.Count</span>
+    </div>
+
+    @if (Visible.Count == 0) {
+        <p class="wb-note">No settings match.</p>
+    } else {
+        <div class="cmp-table-wrap">
+            <table class="data-table cmp-table">
+                <thead>
+                <tr>
+                    <th scope="col">Setting</th>
+                    @foreach (var app in Report.Apps) {
+                        <th scope="col" class="@(app.Ok ? null : "cmp-col-off")">@app.App</th>
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Visible) {
+                    <tr class="@(row.Divergent ? "cmp-row cmp-row-diff" : "cmp-row")">
+                        <th scope="row" class="cmp-key">
+                            <span class="cmp-key-label">@row.Label</span>
+                            <span class="cmp-key-name">@row.Key</span>
+                            @if (row.Secret) {
+                                <span class="badge badge-muted cmp-tag">secret</span>
+                            } else if (row.Divergent) {
+                                <span class="badge badge-accent cmp-tag">differs</span>
+                            }
+                        </th>
+                        @foreach (var cell in row.Cells) {
+                            <td class="@CellCss(cell)">
+                                @if (!Ok(cell.App)) {
+                                    <span class="cmp-na">-</span>
+                                } else if (!cell.Present) {
+                                    <span class="cmp-unset">not set</span>
+                                } else {
+                                    <span class="cmp-value">@cell.Display</span>
+                                    <span class="cmp-src">@cell.Source</span>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public ComparisonReport Report { get; set; } = ComparisonReport.Empty;
+
+    private string _query = "";
+    private bool _divergentOnly;
+
+    private IReadOnlyList<CompareRow> Visible {
+        get {
+            var q = _query.Trim();
+            return [.. Report.Rows
+                .Where(r => !_divergentOnly || r.Divergent)
+                .Where(r => q.Length == 0
+                    || r.Key.Contains(q, StringComparison.OrdinalIgnoreCase)
+                    || r.Label.Contains(q, StringComparison.OrdinalIgnoreCase))];
+        }
+    }
+
+    private bool Ok(string app) =>
+        Report.Apps.FirstOrDefault(a => string.Equals(a.App, app, StringComparison.Ordinal))?.Ok == true;
+
+    private string CellCss(CompareCell cell) {
+        if (!Ok(cell.App)) return "cmp-cell cmp-cell-off";
+        return cell.Present ? "cmp-cell" : "cmp-cell cmp-cell-unset";
+    }
+}

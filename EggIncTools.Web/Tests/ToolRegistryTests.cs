@@ -40,10 +40,10 @@ public class ToolRegistryTests {
     [Fact]
     public void ABlankBrandSlugFallsBackToMatchingTheCatalogAppName() {
         var tools = ToolRegistry.Apply([
-            App("eggledger", url: "https://eggledger.davidarthurcole.me"),
+            App("eggledger", url: "https://eggledger.example.test"),
         ]);
 
-        Assert.Equal("https://eggledger.davidarthurcole.me", Find(tools, "ledger").Url);
+        Assert.Equal("https://eggledger.example.test", Find(tools, "ledger").Url);
     }
 
     [Fact]

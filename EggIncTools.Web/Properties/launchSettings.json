@@ -8,6 +8,19 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "local-admin": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "admin",
+      "applicationUrl": "http://localhost:5081",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging",
+        "EGGINCTOOLS_PORT": "5081",
+        "EGGINCTOOLS_LOCAL_ADMIN": "true",
+        "EGGINCTOOLS_LOCAL_ADMIN_ROLE": "Admin"
+      }
     }
   }
 }

@@ -2,11 +2,9 @@
 @implements IDisposable
 @inject IServiceProvider Services
 
-<ToolsHeader Active="hub" Tools="@_tools" ReturnUrl="@ToolCatalog.HubUrl" ShowSignIn="@(!HubOnly)"/>
-
 <main class="hub">
     <div class="hub-quads">
-        @foreach (var tool in _tools) {
+        @foreach (var tool in Tools) {
             var health = _status?.For(tool.Slug);
             <section class="quad quad-@tool.Slug @(tool.Live ? "" : "quad-soon")" style="--tool: @tool.Accent">
                 <div class="quad-inner">
@@ -113,21 +111,14 @@
         "xxxxxxx xxxx xxxxxx xxxxx xxx xxxxxxxx",
     ];
 
-    private IReadOnlyList<ToolEntry> _tools = ToolCatalog.All;
+    [CascadingParameter] public IReadOnlyList<ToolEntry> Tools { get; set; } = ToolCatalog.All;
+
     private string? _legal;
     private ToolStatusService? _status;
-
-    private bool HubOnly => Services.GetRequiredService<HostConfig>().HubOnly;
 
     protected override void OnInitialized() {
         _status = Services.GetService<ToolStatusService>();
         if (_status is not null) _status.Changed += OnStatusChanged;
-    }
-
-    protected override async Task OnInitializedAsync() {
-        if (Services.GetService<ToolRegistry>() is { } registry) {
-            _tools = await registry.ToolsAsync();
-        }
     }
 
     public void Dispose() {

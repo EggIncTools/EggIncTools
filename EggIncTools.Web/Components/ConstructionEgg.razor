@@ -1,94 +1,23 @@
-@implements IDisposable
-
 <span class="quad-soon-egg">
     <img class="quad-soon-egg-art" src="/brand/soon/egg-hammer.png" alt="" width="336" height="276" loading="lazy"/>
     <svg class="quad-soon-egg-zzz" viewBox="0 0 84 69" aria-hidden="true" focusable="false">
-        @foreach (var puff in _puffs) {
-            <g @key="puff.Id" class="egg-z"
-               style="font-size: @(puff.Size)px; animation-duration: @(puff.Seconds)s; --dx: @(puff.DriftX)px; --dy: @(puff.DriftY)px; --spin: @(puff.Spin)deg">
-                @((MarkupString)$"<text x=\"{puff.X}\" y=\"{puff.Y}\">z</text>")
+        @foreach (var puff in Puffs) {
+            <g class="egg-z" style="font-size: @(puff.Size)px; animation-duration: @(puff.Seconds)s; animation-delay: @(puff.Delay)s; --dx: @(puff.DriftX)px; --dy: @(puff.DriftY)px; --spin: @(puff.Spin)deg">
+                <text x="@puff.X" y="@puff.Y">z</text>
             </g>
         }
     </svg>
 </span>
 
 @code {
-    private sealed record Puff(long Id, string X, string Y, string Size, string Seconds, string DriftX, string DriftY, int Spin);
+    private sealed record Puff(
+        string X, string Y, string Size, string Seconds, string Delay, string DriftX, string DriftY, string Spin);
 
-    private static readonly TimeSpan Beat = TimeSpan.FromMilliseconds(250);
-
-    private readonly List<(Puff Puff, int TicksLeft)> _live = [];
-
-    private Timer? _timer;
-    private long _next;
-    private int _untilSpawn;
-    private bool _disposed;
-
-    private IEnumerable<Puff> _puffs => _live.Select(p => p.Puff);
-
-    protected override void OnInitialized() {
-        _untilSpawn = 1;
-    }
-
-    protected override void OnAfterRender(bool firstRender) {
-        if (firstRender) {
-            _timer = new Timer(_ => Tick(), null, Beat, Beat);
-        }
-    }
-
-    private void Tick() {
-        try {
-            Advance();
-        } catch (ObjectDisposedException) {
-            _timer?.Dispose();
-        }
-    }
-
-    private void Advance() {
-        if (_disposed) return;
-
-        var changed = false;
-
-        for (var i = _live.Count - 1; i >= 0; i--) {
-            var (puff, ticks) = _live[i];
-            if (ticks > 1) {
-                _live[i] = (puff, ticks - 1);
-                continue;
-            }
-            _live.RemoveAt(i);
-            changed = true;
-        }
-
-        if (--_untilSpawn <= 0) {
-            _live.Add(Spawn());
-            _untilSpawn = Random.Shared.Next(3, 9);
-            changed = true;
-        }
-
-        if (!changed) return;
-        _ = InvokeAsync(StateHasChanged);
-    }
-
-    private (Puff, int) Spawn() {
-        var seconds = Random.Shared.Next(28, 46) / 10.0;
-        var puff = new Puff(
-            _next++,
-            Fmt(Random.Shared.Next(60, 170) / 10.0),
-            Fmt(Random.Shared.Next(-20, 40) / 10.0),
-            Fmt(Random.Shared.Next(90, 150) / 10.0),
-            Fmt(seconds),
-            Fmt(Random.Shared.Next(30, 140) / 10.0),
-            Fmt(-Random.Shared.Next(130, 260) / 10.0),
-            Random.Shared.Next(-25, 26));
-
-        return (puff, (int)Math.Ceiling(seconds / Beat.TotalSeconds) + 1);
-    }
-
-    private static string Fmt(double value) =>
-        value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
-
-    public void Dispose() {
-        _disposed = true;
-        _timer?.Dispose();
-    }
+    private static readonly Puff[] Puffs = [
+        new("7.4", "1.2", "10.5", "3.4", "0", "5.2", "-17.5", "12"),
+        new("12.8", "-0.6", "12.9", "4.1", "1.1", "9.7", "-21.2", "-14"),
+        new("9.6", "2.8", "9.4", "3.7", "2.3", "3.8", "-15.4", "21"),
+        new("15.2", "0.4", "13.6", "4.4", "3.6", "12.4", "-24.1", "-8"),
+        new("6.2", "-1.4", "11.2", "3.1", "4.9", "7.1", "-19.3", "17"),
+    ];
 }

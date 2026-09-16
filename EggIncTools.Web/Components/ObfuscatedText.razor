@@ -1,131 +1,57 @@
-@implements IDisposable
-
-<span class="quad-obfuscated" role="img" aria-label="@Announce" style="--glyphs: @Pattern.Length">@foreach (var run in _runs) {
-        if (run.Color is null) {
-            @run.Text
+<span class="quad-obfuscated" role="img" aria-label="@Announce" style="--glyphs: @Pattern.Length">@for (var i = 0; i < Pattern.Length; i++) {
+        if (Pattern[i] == ' ') {
+            <span class="quad-gap"> </span>
         } else {
-            <span style="color: @run.Color">@run.Text</span>
+            <span class="quad-cell" style="--cell: @i; --tint: @Tint(i)">@foreach (var face in Faces(Seed + i)) {
+                    <span class="quad-face">@face</span>
+                }</span>
         }
     }</span>
 
 @code {
+    private const int FaceCount = 6;
+    private const int TintOdds = 7;
+
     private static readonly char[] Glyphs =
         ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
          + "!?#%&@$*+=/<>~^|;:,.'`()[]{}-_"
-         + "\u00c6\u00d0\u00de\u00df\u00f0\u00fe\u0111\u0127\u0142\u014b\u0153\u01a1\u01b0"
-         + "\u0393\u0394\u0398\u039b\u039e\u03a0\u03a3\u03a6\u03a8\u03a9\u03b1\u03b2\u03b3\u03b4\u03b5"
-         + "\u03b6\u03b7\u03b8\u03bb\u03bc\u03be\u03c0\u03c1\u03c3\u03c4\u03c6\u03c7\u03c8\u03c9"
-         + "\u0414\u0416\u0418\u041b\u0426\u0429\u042e\u042f\u0431\u0432\u0434\u0436\u0437\u0438"
-         + "\u043b\u0444\u0446\u0447\u0448\u044f"
-         + "\u2020\u2021\u00a7\u00b6\u2202\u221e\u222b\u2211\u220f\u221a\u2248\u2260\u2264\u2265\u00b1\u00f7\u00d7"
-         + "\u2190\u2191\u2192\u2193\u2194\u21d2\u21d4\u25a0\u25b2\u25bc\u25c6\u25cf\u2605\u2666\u266a").ToCharArray();
+         + "ÆÐÞßðþđħłŋœơư"
+         + "ΓΔΘΛΞΠΣΦΨΩαβγδε"
+         + "ζηθλμξπρστφχψω"
+         + "ДЖИЛЦЩЮЯбвджзи"
+         + "лфцчшя"
+         + "†‡§¶∂∞∫∑∏√≈≠≤≥±÷×"
+         + "←↑→↓↔⇒⇔■▲▼◆●★♦♪").ToCharArray();
 
     private static readonly string[] Tints =
         ["#3b82f6", "#ef7559", "#f43f5e", "#f0b232", "#7aa2ff", "#4ade80", "#c084fc", "#22d3ee"];
-
-    private static readonly TimeSpan Beat = TimeSpan.FromMilliseconds(50);
-
-    private const int MinBeats = 2;
-    private const int MaxBeats = 9;
-    private const int ColorOdds = 256;
-    private const int RunBeatsMin = 14;
-    private const int RunBeatsMax = 64;
 
     [Parameter] public string Pattern { get; set; } = "";
 
     [Parameter] public string Announce { get; set; } = "Coming soon";
 
-    private (string Text, string? Color)[] _runs = [];
-
-    private Timer? _timer;
-    private bool _disposed;
-    private string _pattern = "";
-    private char[] _chars = [];
-    private string?[] _colors = [];
-    private int[] _dueIn = [];
-    private int _minLength;
-    private int _length;
-    private int _target;
-    private int _runDueIn;
-
-    protected override void OnParametersSet() {
-        if (_pattern == Pattern) return;
-        _pattern = Pattern;
-        _chars = new char[_pattern.Length];
-        _colors = new string?[_pattern.Length];
-        _dueIn = new int[_pattern.Length];
-        for (var i = 0; i < _pattern.Length; i++) {
-            _chars[i] = _pattern[i] == ' ' ? ' ' : NextGlyph();
-            _dueIn[i] = Random.Shared.Next(MinBeats, MaxBeats + 1);
-        }
-        _minLength = Math.Max(1, _pattern.Length * 3 / 5);
-        _length = _pattern.Length;
-        _target = _length;
-        _runDueIn = NextRunBeats();
-        Compose();
-    }
-
-    protected override void OnAfterRender(bool firstRender) {
-        if (firstRender && _pattern.Length > 0) {
-            _timer = new Timer(_ => Tick(), null, Beat, Beat);
+    private int Seed {
+        get {
+            var seed = 17;
+            foreach (var c in Pattern) seed = seed * 31 + c;
+            return seed & 0xffff;
         }
     }
 
-    private void Tick() {
-        try {
-            Advance();
-        } catch (ObjectDisposedException) {
-            _timer?.Dispose();
+    private IEnumerable<char> Faces(int cell) {
+        for (var face = 0; face < FaceCount; face++) {
+            yield return Glyphs[Hash(cell, face) % Glyphs.Length];
         }
     }
 
-    private void Advance() {
-        if (_disposed || _pattern.Length == 0) return;
-        var changed = StepLength();
-        for (var i = 0; i < _length; i++) {
-            if (_pattern[i] == ' ') continue;
-            if (--_dueIn[i] > 0) continue;
-            _chars[i] = NextGlyph();
-            _colors[i] = Random.Shared.Next(ColorOdds) == 0 ? Tints[Random.Shared.Next(Tints.Length)] : null;
-            _dueIn[i] = Random.Shared.Next(MinBeats, MaxBeats + 1);
-            changed = true;
-        }
-        if (!changed) return;
-        Compose();
-        _ = InvokeAsync(StateHasChanged);
-    }
+    private string Tint(int cell) =>
+        Hash(Seed + cell, 97) % TintOdds == 0 ? Tints[Hash(Seed + cell, 131) % Tints.Length] : "currentColor";
 
-    private bool StepLength() {
-        if (--_runDueIn <= 0) {
-            _target = Random.Shared.Next(_minLength, _pattern.Length + 1);
-            _runDueIn = NextRunBeats();
-        }
-        if (_length == _target) return false;
-        _length += _length < _target ? 1 : -1;
-        return true;
-    }
-
-    private void Compose() {
-        var runs = new List<(string Text, string? Color)>();
-        var end = _length;
-        while (end > 0 && _pattern[end - 1] == ' ') end--;
-        var start = 0;
-        while (start < end) {
-            var color = _colors[start];
-            var stop = start;
-            while (stop < end && _colors[stop] == color) stop++;
-            runs.Add((new string(_chars, start, stop - start), color));
-            start = stop;
-        }
-        _runs = [.. runs];
-    }
-
-    private static int NextRunBeats() => Random.Shared.Next(RunBeatsMin, RunBeatsMax + 1);
-
-    private static char NextGlyph() => Glyphs[Random.Shared.Next(Glyphs.Length)];
-
-    public void Dispose() {
-        _disposed = true;
-        _timer?.Dispose();
+    private static int Hash(int cell, int salt) {
+        var h = (uint)((cell + 1) * 2654435761u ^ (uint)(salt * 40503));
+        h ^= h >> 15;
+        h *= 2246822519u;
+        h ^= h >> 13;
+        return (int)(h & 0x7fffffff);
     }
 }

@@ -41,7 +41,7 @@ jobs:
     uses: EggIncTools/EggIdentity/.github/workflows/notify-agent.yml@main
     with:
       app: egginctools
-      agent-url: https://egghook.davidarthurcole.me/agent
+      agent-url: https://egghook.egginc.tools/agent
       digest: ${{ needs.docker-web.outputs.digest }}
       revision: ${{ github.sha }}
       version: ${{ github.ref_name }}

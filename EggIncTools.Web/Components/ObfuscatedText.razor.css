@@ -7,3 +7,47 @@
     white-space: nowrap;
     text-align: center;
 }
+
+.quad-gap {
+    display: inline-block;
+    width: 0.62em;
+}
+
+.quad-cell {
+    display: inline-grid;
+    color: var(--tint, currentColor);
+    vertical-align: bottom;
+}
+
+.quad-face {
+    grid-area: 1 / 1;
+    opacity: 0;
+    animation: quad-flip 1.8s steps(1, end) infinite;
+    animation-delay: calc(var(--cell) * -137ms - var(--face) * 300ms);
+}
+
+.quad-face:nth-child(1) { --face: 0 }
+.quad-face:nth-child(2) { --face: 1 }
+.quad-face:nth-child(3) { --face: 2 }
+.quad-face:nth-child(4) { --face: 3 }
+.quad-face:nth-child(5) { --face: 4 }
+.quad-face:nth-child(6) { --face: 5 }
+
+@keyframes quad-flip {
+    0%, 16.6% {
+        opacity: 1;
+    }
+    16.7%, 100% {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quad-face {
+        animation: none;
+    }
+
+    .quad-face:nth-child(1) {
+        opacity: 1;
+    }
+}

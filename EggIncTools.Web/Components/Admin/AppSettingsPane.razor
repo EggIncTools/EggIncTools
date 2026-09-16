@@ -1,0 +1,33 @@
+@using EggIdentity.Settings.AdminUi
+@using EggIdentity.Settings.Api
+@using EggIdentity.Settings.Store
+
+<div class="aps">
+    @if (_admin is null) {
+        <p class="wb-note">@(Status?.Unavailable ?? "This app cannot be administered from here.")</p>
+    } else {
+        <SettingsPanel @key="Key" Admin="@_admin" UpdatedBy="@UpdatedBy"/>
+    }
+</div>
+
+@code {
+    [Parameter] public AdminTargetStatus? Status { get; set; }
+    [Parameter] public string? UpdatedBy { get; set; }
+
+    private ISettingsAdmin? _admin;
+    private AdminApiClient? _client;
+
+    [Inject] private IServiceProvider Services { get; set; } = default!;
+
+    private string Key => Status?.App ?? "none";
+
+    protected override void OnParametersSet() {
+        if (Status?.Target is not { } target) {
+            _admin = null;
+            return;
+        }
+
+        _client ??= Services.GetService<AdminApiClient>();
+        _admin = _client is null ? null : new RemoteSettingsAdmin(_client, target);
+    }
+}

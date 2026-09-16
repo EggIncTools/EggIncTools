@@ -1,6 +1,8 @@
 using EggIdentity.Fallback;
 using EggIdentity.Settings.Store;
+using EggIncTools.Shell;
 using EggIncTools.Web.Components;
+using EggIncTools.Web.Services;
 using Npgsql;
 
 namespace EggIncTools.Web;
@@ -13,9 +15,11 @@ public static class Program {
         var config = HostConfig.FromEnvironment();
 
         var builder = WebApplication.CreateBuilder(args);
+        LocalAdminGate.Guard(builder.Environment.EnvironmentName);
         var runtime = HostServices.Register(builder, config);
 
         var app = builder.Build();
+        WarnIfAuthBypassed(app);
         ConfigurePipeline(app, config);
         await InitializeAsync(app, runtime);
         MapRoutes(app, config);
@@ -23,12 +27,27 @@ public static class Program {
         await app.RunAsync();
     }
 
+    private static void WarnIfAuthBypassed(WebApplication app) {
+        if (!LocalAdminGate.IsOn(app.Environment.EnvironmentName)) return;
+
+        var settings = LocalAdminGate.Settings();
+        app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("LocalAdmin").LogWarning(
+            "AUTHENTICATION IS BYPASSED. {Enabled} is on in {Environment}, so every request is {User} "
+            + "({UserId}) with role {Role} and no sign-in is required. Never run this on a public host.",
+            LocalAdminGate.EnabledEnv, app.Environment.EnvironmentName, settings.Username,
+            LocalAdminSettings.UserId, settings.RoleName);
+    }
+
     private static void ConfigurePipeline(WebApplication app, HostConfig config) {
+        var returns = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("ReturnUrl");
+        ToolCatalog.OnReturnRejected = host =>
+            returns.LogWarning("rejected a returnUrl on {Host}; sending the user to {Hub} instead", host, ToolCatalog.HubUrl);
+
         app.UseForwardedHeaders();
         app.UseEggIdentityFallback();
         app.UseStaticFiles();
 
-        if (config.AuthEnabled) {
+        if (config.AuthEnabled || LocalAdminGate.IsOn(app.Environment.EnvironmentName)) {
             app.UseAuthentication();
             app.UseAuthorization();
         }

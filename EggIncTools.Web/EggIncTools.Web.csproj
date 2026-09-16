@@ -10,12 +10,16 @@
   <ItemGroup>
     <PackageReference Include="Npgsql" />
     <PackageReference Include="EggIdentity.Auth" />
+    <PackageReference Include="EggIdentity.Client" />
     <PackageReference Include="EggIdentity.Contract" />
     <PackageReference Include="EggIdentity.Deploy" />
+    <PackageReference Include="EggIdentity.Deploy.AdminUi" />
     <PackageReference Include="EggIdentity.Fallback" />
     <PackageReference Include="EggIdentity.Icons" />
     <PackageReference Include="EggIdentity.Resilience" />
     <PackageReference Include="EggIdentity.Settings" />
+    <PackageReference Include="EggIdentity.Settings.AdminUi" />
+    <PackageReference Include="EggIdentity.Settings.Api" />
     <PackageReference Include="EggIdentity.Settings.Store" />
     <PackageReference Include="EggIdentity.UI" />
   </ItemGroup>

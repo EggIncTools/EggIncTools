@@ -1,0 +1,21 @@
+@inherits LayoutComponentBase
+@inject IServiceProvider Services
+@inject NavigationManager Nav
+
+<ToolsHeader Active="hub" Tools="@_tools" ReturnUrl="@Nav.Uri" ShowSignIn="@(!HubOnly)"/>
+
+<CascadingValue Value="@_tools">
+    @Body
+</CascadingValue>
+
+@code {
+    private IReadOnlyList<ToolEntry> _tools = ToolCatalog.All;
+
+    private bool HubOnly => Services.GetRequiredService<HostConfig>().HubOnly;
+
+    protected override async Task OnInitializedAsync() {
+        if (Services.GetService<ToolRegistry>() is { } registry) {
+            _tools = await registry.ToolsAsync();
+        }
+    }
+}

@@ -1,20 +1,24 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <EggIdentityVersion>2.4.3</EggIdentityVersion>
+    <EggIdentityVersion>2.6.1</EggIdentityVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="EggIdentity.Auth" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Brand" Version="$(EggIdentityVersion)" />
+    <PackageVersion Include="EggIdentity.Client" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.CodeStyle" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Contract" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Deploy" Version="$(EggIdentityVersion)" />
+    <PackageVersion Include="EggIdentity.Deploy.AdminUi" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Fallback" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Icons" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Resilience" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Settings" Version="$(EggIdentityVersion)" />
+    <PackageVersion Include="EggIdentity.Settings.AdminUi" Version="$(EggIdentityVersion)" />
+    <PackageVersion Include="EggIdentity.Settings.Api" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Settings.Store" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Styles" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.UI" Version="$(EggIdentityVersion)" />

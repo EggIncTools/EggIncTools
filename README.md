@@ -13,9 +13,6 @@ renders the shared header those tools embed so four separate origins read as one
 Each tool is its own origin and its own deployment. The hub reads the URL and state of every tool from the
 EggIdentity settings database, so a tool moves host without a hub release.
 
-Sign-in is shared once the session cookie is scoped to `.egginc.tools`. Until the identity host moves off
-`eggidentity.davidarthurcole.me`, that cookie does not reach the hub. See `docs/handoff.md`.
-
 `EggIncTools.Shell` is published to NuGet. Tools reference it and drop `<ToolsHeader Active="slug"/>`
 into their layout.
 

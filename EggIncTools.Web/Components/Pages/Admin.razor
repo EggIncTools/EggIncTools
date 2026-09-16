@@ -1,0 +1,124 @@
+@page "/admin"
+@using EggIdentity.Auth
+@using EggIdentity.Contract
+@using EggIdentity.Settings.Api
+@inject IServiceProvider Services
+@inject NavigationManager Nav
+
+<PageTitle>Admin - EggInc.tools</PageTitle>
+
+@if (!_checked) {
+    <main class="adm"><p class="wb-note">Checking access...</p></main>
+} else if (!_isAdmin) {
+    <main class="adm">
+        <p class="wb-note">Admin access required.</p>
+        @if (!HubOnly) {
+            <SignInPanel ReturnUrl="@Nav.Uri"/>
+        }
+    </main>
+} else {
+    <main class="adm">
+        <ToastHost/>
+        <header class="adm-head">
+            <h1 class="adm-title">Admin</h1>
+            <div class="adm-modes">
+                <button type="button" class="@ModeCss(Mode.App)" @onclick="@(() => _mode = Mode.App)">One app</button>
+                <button type="button" class="@ModeCss(Mode.Compare)" @onclick="ShowComparisonAsync">Compare all</button>
+                <button type="button" class="@ModeCss(Mode.Promote)" @onclick="@(() => _mode = Mode.Promote)">Promote</button>
+                <button type="button" class="btn-mini" disabled="@_busy" @onclick="ReloadAsync">
+                    <Icon Name="refresh" Class="icon-sm"/>Reload
+                </button>
+            </div>
+        </header>
+
+        @if (_mode == Mode.Promote) {
+            <PromotionPanel UpdatedBy="@_userId"/>
+        } else if (_apps.Count == 0) {
+            <p class="wb-note">
+                No admin targets are configured. Add rows to the admin.targets collection, then set
+                ADMIN_SECRET_&lt;NAME&gt; on this host for each one.
+            </p>
+        } else if (_mode == Mode.Compare) {
+            <span class="adm-sub">Read-only across apps. Pick an app above to change anything.</span>
+            @if (_report is null) {
+                <p class="wb-note">Reading every target...</p>
+            } else {
+                <SettingsComparisonPane Report="@_report"/>
+            }
+        } else {
+            <AppSwitcher Apps="@_apps" Selected="@_selected" OnSelect="Select"/>
+            <AppSettingsPane Status="@Current" UpdatedBy="@_userId"/>
+        }
+    </main>
+}
+
+@code {
+    private enum Mode {
+        App,
+        Compare,
+        Promote,
+    }
+
+    [CascadingParameter] private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    private bool _isAdmin;
+    private bool _checked;
+    private Mode _mode = Mode.App;
+    private bool _busy;
+    private string? _userId;
+    private string? _selected;
+    private IReadOnlyList<AdminTargetStatus> _apps = [];
+    private ComparisonReport? _report;
+
+    private bool HubOnly => Services.GetRequiredService<HostConfig>().HubOnly;
+
+    private AdminTargetStatus? Current =>
+        _apps.FirstOrDefault(a => string.Equals(a.App, _selected, StringComparison.Ordinal));
+
+    protected override async Task OnInitializedAsync() {
+        if (AuthStateTask is not null) {
+            var state = await AuthStateTask;
+            _isAdmin = state.User.IsAtLeast(UserRole.Admin);
+            _userId = state.User.FindFirst("sub")?.Value;
+        }
+
+        _checked = true;
+        if (!_isAdmin) return;
+
+        if (Services.GetService<AdminTargetsService>() is { } targets) {
+            _apps = await targets.StatusesAsync(ct: CancellationToken.None);
+        }
+
+        _selected = _apps.FirstOrDefault(a => a.Administrable)?.App;
+    }
+
+    private void Select(string app) => _selected = app;
+
+    private async Task ReloadAsync() {
+        _busy = true;
+        try {
+            if (Services.GetService<AdminTargetsService>() is { } targets) {
+                _apps = await targets.StatusesAsync(refresh: true, ct: CancellationToken.None);
+            }
+
+            if (Current is null) _selected = _apps.FirstOrDefault(a => a.Administrable)?.App;
+
+            _report = null;
+            if (_mode == Mode.Compare) await ShowComparisonAsync();
+        } finally {
+            _busy = false;
+        }
+    }
+
+    private async Task ShowComparisonAsync() {
+        _mode = Mode.Compare;
+        if (_report is not null) return;
+
+        if (Services.GetService<SettingsComparison>() is { } comparison) {
+            _report = await comparison.BuildAsync(ct: CancellationToken.None);
+        }
+    }
+
+    private string ModeCss(Mode mode) =>
+        _mode == mode ? "btn-mini adm-mode adm-mode-on" : "btn-mini adm-mode";
+}
