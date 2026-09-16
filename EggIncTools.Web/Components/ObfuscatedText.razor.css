@@ -15,7 +15,6 @@
 
 .quad-cell {
     display: inline-grid;
-    color: var(--tint, currentColor);
     vertical-align: bottom;
 }
 

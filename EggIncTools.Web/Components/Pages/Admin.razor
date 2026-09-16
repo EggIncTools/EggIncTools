@@ -11,10 +11,10 @@
     <main class="adm"><p class="wb-note">Checking access...</p></main>
 } else if (!_isAdmin) {
     <main class="adm">
-        <p class="wb-note">Admin access required.</p>
-        @if (!HubOnly) {
-            <SignInPanel ReturnUrl="@Nav.Uri"/>
-        }
+        <p class="wb-note">
+            @(_wasRejected ? "That account is not an administrator, so it has been signed out." : "Admin access required.")
+        </p>
+        <SignInPanel ReturnUrl="@AdminUrl"/>
     </main>
 } else {
     <main class="adm">
@@ -63,6 +63,7 @@
 
     private bool _isAdmin;
     private bool _checked;
+    private bool _wasRejected;
     private Mode _mode = Mode.App;
     private bool _busy;
     private string? _userId;
@@ -70,16 +71,23 @@
     private IReadOnlyList<AdminTargetStatus> _apps = [];
     private ComparisonReport? _report;
 
-    private bool HubOnly => Services.GetRequiredService<HostConfig>().HubOnly;
+    private string AdminUrl => Nav.ToAbsoluteUri("/admin").ToString();
 
     private AdminTargetStatus? Current =>
         _apps.FirstOrDefault(a => string.Equals(a.App, _selected, StringComparison.Ordinal));
 
     protected override async Task OnInitializedAsync() {
+        _wasRejected = Nav.Uri.Contains("rejected=1", StringComparison.Ordinal);
+
         if (AuthStateTask is not null) {
             var state = await AuthStateTask;
             _isAdmin = state.User.IsAtLeast(UserRole.Admin);
             _userId = state.User.FindFirst("sub")?.Value;
+
+            if (!_isAdmin && !_wasRejected && state.User.Identity?.IsAuthenticated == true) {
+                Nav.NavigateTo("/admin/reject", forceLoad: true);
+                return;
+            }
         }
 
         _checked = true;

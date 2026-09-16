@@ -5,14 +5,13 @@ using Xunit;
 namespace EggIncTools.Web.Tests;
 
 [Collection("LocalAdminGate")]
-public class LocalAdminGateTests : IDisposable {
+public sealed class LocalAdminGateTests : IDisposable {
     private readonly string? _enabled = Environment.GetEnvironmentVariable(LocalAdminGate.EnabledEnv);
     private readonly string? _role = Environment.GetEnvironmentVariable(LocalAdminGate.RoleEnv);
 
     public void Dispose() {
         Environment.SetEnvironmentVariable(LocalAdminGate.EnabledEnv, _enabled);
         Environment.SetEnvironmentVariable(LocalAdminGate.RoleEnv, _role);
-        GC.SuppressFinalize(this);
     }
 
     [Fact]

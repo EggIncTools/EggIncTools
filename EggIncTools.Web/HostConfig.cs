@@ -9,7 +9,7 @@ public sealed class HostConfig {
     public SessionCookieOptions? SessionOptions { get; init; }
     public required string? IdentityApiUrl { get; init; }
     public required string? IdentityApiSecret { get; init; }
-    public bool AuthEnabled => !HubOnly && SessionOptions is not null;
+    public bool AuthEnabled => SessionOptions is not null;
 
     public bool IdentityApiEnabled =>
         IdentityApiUrl is { Length: > 0 } && IdentityApiSecret is { Length: > 0 };

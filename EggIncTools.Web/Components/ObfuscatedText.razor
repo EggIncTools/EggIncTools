@@ -2,15 +2,15 @@
         if (Pattern[i] == ' ') {
             <span class="quad-gap"> </span>
         } else {
-            <span class="quad-cell" style="--cell: @i; --tint: @Tint(i)">@foreach (var face in Faces(Seed + i)) {
-                    <span class="quad-face">@face</span>
+            <span class="quad-cell" style="--cell: @i">@foreach (var face in Faces(Seed + i)) {
+                    <span class="quad-face" style="color: @face.Tint">@face.Glyph</span>
                 }</span>
         }
     }</span>
 
 @code {
     private const int FaceCount = 6;
-    private const int TintOdds = 7;
+    private const int TintOdds = 40;
 
     private static readonly char[] Glyphs =
         ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -38,14 +38,16 @@
         }
     }
 
-    private IEnumerable<char> Faces(int cell) {
+    private static IEnumerable<Face> Faces(int cell) {
         for (var face = 0; face < FaceCount; face++) {
-            yield return Glyphs[Hash(cell, face) % Glyphs.Length];
+            var tinted = Hash(cell, face + 97) % TintOdds == 0;
+            yield return new Face(
+                Glyphs[Hash(cell, face) % Glyphs.Length],
+                tinted ? Tints[Hash(cell, face + 131) % Tints.Length] : "inherit");
         }
     }
 
-    private string Tint(int cell) =>
-        Hash(Seed + cell, 97) % TintOdds == 0 ? Tints[Hash(Seed + cell, 131) % Tints.Length] : "currentColor";
+    private sealed record Face(char Glyph, string Tint);
 
     private static int Hash(int cell, int salt) {
         var h = (uint)((cell + 1) * 2654435761u ^ (uint)(salt * 40503));

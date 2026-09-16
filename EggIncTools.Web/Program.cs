@@ -1,3 +1,4 @@
+using EggIdentity.Auth;
 using EggIdentity.Fallback;
 using EggIdentity.Settings.Store;
 using EggIncTools.Shell;
@@ -69,6 +70,13 @@ public static class Program {
     }
 
     private static void MapRoutes(WebApplication app, HostConfig config) {
+        if (config.SessionOptions is { } session) {
+            app.MapGet("/admin/reject", (HttpContext ctx) => {
+                SessionIssuer.ClearCookie(ctx.Response, session);
+                return Results.Redirect("/admin?rejected=1");
+            });
+        }
+
         if (config.DatabaseEnabled) {
             app.MapGet("/health", async (NpgsqlDataSource db, CancellationToken ct) => {
                 try {
