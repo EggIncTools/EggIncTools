@@ -26,7 +26,7 @@ public static class ToolCatalog {
     public const string HubHost = "egginc.tools";
     public const string HubUrl = $"https://{HubHost}";
     public const string IdentityOriginEnv = "IDENTITY_WIDGET_URL";
-    public const string DefaultIdentityOrigin = "https://eggidentity.egginc.tools";
+    public const string DefaultIdentityOrigin = $"https://id.{HubHost}";
 
     public static IReadOnlyList<string> ReturnHosts { get; } = [HubHost];
 
