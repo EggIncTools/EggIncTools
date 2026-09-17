@@ -95,7 +95,6 @@ internal static class HostServices {
         builder.Services.AddCascadingAuthenticationState();
         builder.Services.AddEggIdentitySettingsPanel();
         builder.Services.AddEggIdentityPromotion();
-        builder.Services.AddScoped<CurrentUser>();
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents(o => o.DetailedErrors = !builder.Environment.IsProduction());
         builder.Services.AddEggIdentityDeployFromEnvironment("egginctools");

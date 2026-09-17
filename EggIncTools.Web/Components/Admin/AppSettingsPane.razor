@@ -6,7 +6,14 @@
     @if (_admin is null) {
         <p class="wb-note">@(Status?.Unavailable ?? "This app cannot be administered from here.")</p>
     } else {
-        <SettingsPanel @key="Key" Admin="@_admin" UpdatedBy="@UpdatedBy"/>
+        <ErrorBoundary @key="Key">
+            <ChildContent>
+                <SettingsPanel @key="Key" Admin="@_admin" UpdatedBy="@UpdatedBy"/>
+            </ChildContent>
+            <ErrorContent>
+                <p class="wb-note">@Failure(context)</p>
+            </ErrorContent>
+        </ErrorBoundary>
     }
 </div>
 
@@ -20,6 +27,11 @@
     [Inject] private IServiceProvider Services { get; set; } = default!;
 
     private string Key => Status?.App ?? "none";
+
+    private string Failure(Exception exc) =>
+        exc is HttpRequestException http
+            ? $"{Key} refused the request: {http.Message}"
+            : $"{Key} could not be loaded: {exc.Message}";
 
     protected override void OnParametersSet() {
         if (Status?.Target is not { } target) {
