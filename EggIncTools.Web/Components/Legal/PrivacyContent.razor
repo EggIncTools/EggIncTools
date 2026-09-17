@@ -1,7 +1,10 @@
 <section class="prose-legal prose-legal-section">
-    <h2>What this covers</h2>
+    <h2>The short version</h2>
     <p>
-        EggInc.tools is the front door to a suite of Egg, Inc. fan tools. This covers the hub itself.
+        EggInc.tools is the front door to a suite of Egg, Inc. fan tools, and one sign-in works across
+        all of them. This covers the hub and the shared identity service behind that sign-in. Only the
+        identity data needed to recognise you and apply your role or perks is stored. There is no
+        advertising, no third-party tracking, and no analytics, and payment data is never handled here.
         Each tool has its own privacy policy covering the data that tool stores.
     </p>
 </section>
@@ -15,12 +18,69 @@
 </section>
 
 <section class="prose-legal prose-legal-section">
-    <h2>Cookies</h2>
+    <h2>Signing in</h2>
     <p>
-        The hub sets no cookies of its own. It reads one cookie if it is already present: the shared
-        sign-in cookie issued by EggIdentity, which is how the header can show your name instead of a
-        sign-in link. That cookie is scoped to the parent domain so a single sign-in works across every
-        tool. The Sign out link in the header clears it.
+        Sign-in runs through the shared identity service at
+        <a href="@ToolCatalog.DefaultIdentityOrigin" target="_blank" rel="noopener">id.egginc.tools</a>.
+        It sits between you, an OAuth provider you choose (Discord, Google, Microsoft, or GitHub) via a
+        self-hosted Authentik instance at auth.egginc.tools, and the tool you are signing into. Your
+        password is never seen or stored here; the provider and Authentik handle it entirely.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>What the identity service stores</h2>
+    <p>When you log in, a single account record is created or updated holding:</p>
+    <ul>
+        <li>An internal account id.</li>
+        <li>Your Discord user id, username, and avatar, if you have linked Discord.</li>
+        <li>The role assigned to your account (for example viewer, contributor, or admin) on whichever tool you are using.</li>
+        <li>When the account was created and when you last logged in.</li>
+    </ul>
+    <p>
+        If you link more than one provider to the same account, each linked provider's id and the
+        username and avatar it reports are stored too, so you are recognised on any of them. Linking
+        anything beyond the first provider you log in with is optional. A custom avatar uploaded through
+        your profile (up to 2&nbsp;MB, PNG/JPEG/WebP) is stored keyed to your account id and served back
+        by the identity service.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Single sign-on cookie</h2>
+    <p>
+        Logging in to any tool in the suite sets one shared session cookie, scoped to the parent
+        egginc.tools domain, so you do not have to log in again on the others. That cookie is also how
+        the header can show your name instead of a sign-in link. It holds a signed token containing your
+        account id, role, and a session id; it does not carry your password or provider tokens. The Sign
+        out link in the header clears it everywhere, and the session id is revoked server-side so a copy
+        of an old cookie cannot be reused. If you revoke access from the OAuth provider's own settings,
+        the provider notifies Authentik directly and your session on every tool ends the same way.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Cookies and local storage</h2>
+    <p>
+        The hub sets no cookies of its own, and only strictly-necessary storage is used across the
+        suite. There are no advertising or tracking cookies, so there is no consent banner to click
+        through.
+    </p>
+    <ul>
+        <li><strong>eggidentity_session.</strong> The shared sign-in cookie described above. HttpOnly, scoped to egginc.tools, removed on logout or expiry.</li>
+        <li><strong>eggidentity_idhint.</strong> A short-lived, HttpOnly cookie used only to support clean logout and account re-linking with the OAuth provider. Not used to identify you anywhere else.</li>
+        <li><strong>Antiforgery token cookie.</strong> Present on admin pages only, protects form submissions against cross-site request forgery. Does not identify you.</li>
+    </ul>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Supporter sync (GitHub Sponsors)</h2>
+    <p>
+        If you link a GitHub account and sponsor the operator through GitHub Sponsors, your sponsorship
+        status is checked against the GitHub API, or received instantly through a signed GitHub webhook,
+        and whether you are currently a sponsor is stored along with when that was last checked. This
+        grants a Discord role and the related supporter perks in the tools. No payment details are ever
+        seen here; GitHub Sponsors handles all billing.
     </p>
 </section>
 
@@ -33,12 +93,42 @@
 </section>
 
 <section class="prose-legal prose-legal-section">
-    <h2>Contact</h2>
+    <h2>Data retention</h2>
     <p>
-        The hosted instance is run by an individual, David Cole, not a company. Source is at
+        Account data is kept while your account is active. Expired or revoked sessions are cleared
+        automatically. Deleting your account removes your linked identities and any stored avatar along
+        with it.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Removing your data</h2>
+    <p>To remove the data stored about you:</p>
+    <ul>
+        <li>Revoke access from your Discord, Google, Microsoft, or GitHub account's authorized-apps settings to cut the connection at the provider.</li>
+        <li>Clear cookies for egginc.tools sites to remove the local session.</li>
+        <li>
+            Contact the operator through the
+            <a href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">GitHub organization</a>
+            or the project
+            <a href="@ToolCatalog.DiscordUrl" target="_blank" rel="noopener">Discord server</a>
+            to request deletion of your stored account record.
+        </li>
+    </ul>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Changes and contact</h2>
+    <p>
+        This policy may change as the suite changes. The date at the top is the last revision. The
+        hosted instance is run by an individual, David Cole, not a company. Source is at
         <a href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">github.com/EggIncTools</a>.
         See also the
-        <button type="button" class="legal-link-btn" @onclick="OnOpenTerms">Terms of Service</button>.
+        @if (OnOpenTerms.HasDelegate) {
+            <button type="button" class="legal-link-btn" @onclick="OnOpenTerms">Terms of Service</button>
+        } else {
+            <a href="/terms">Terms of Service</a>
+        }.
     </p>
 </section>
 

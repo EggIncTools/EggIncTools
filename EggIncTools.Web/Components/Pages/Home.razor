@@ -89,12 +89,12 @@
 
     <footer class="hub-foot">
         <nav class="hub-foot-links">
-            <button type="button" @onclick="@(() => _legal = "privacy")">
+            <a href="/privacy" @onclick="@(() => _legal = "privacy")" @onclick:preventDefault>
                 <Icon Name="file-text" Class="icon-xs"/>Privacy
-            </button>
-            <button type="button" @onclick="@(() => _legal = "terms")">
+            </a>
+            <a href="/terms" @onclick="@(() => _legal = "terms")" @onclick:preventDefault>
                 <Icon Name="file-text" Class="icon-xs"/>Terms
-            </button>
+            </a>
         </nav>
         <p class="hub-disclaimer">
             <span>Independent, fan-made, and not affiliated with, endorsed by, or sponsored by Auxbrain Inc.</span>

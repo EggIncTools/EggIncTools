@@ -474,7 +474,7 @@ a.quad-name:hover ::deep .quad-name-out {
     gap: 1.5rem;
 }
 
-.hub-foot-links button {
+.hub-foot-links a {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
@@ -484,10 +484,11 @@ a.quad-name:hover ::deep .quad-name-out {
     color: var(--color-muted);
     font: inherit;
     font-weight: 600;
+    text-decoration: none;
     cursor: pointer;
 }
 
-.hub-foot-links button:hover {
+.hub-foot-links a:hover {
     color: var(--color-accent);
 }
 

@@ -1,9 +1,13 @@
 <section class="prose-legal prose-legal-section">
     <h2>What this is</h2>
     <p>
-        EggInc.tools is a landing page for a set of Egg, Inc. fan tools built by one person. It hosts no
-        game data of its own; it links to the tools and shows which version each one is running. It is
-        not a game client, a cheat, or a service operated by the developer of Egg, Inc.
+        EggInc.tools is a landing page for a set of Egg, Inc. fan tools built by one person, plus the
+        shared sign-in that the tools use and the small deploy agent used to run them. The hub hosts no
+        game data of its own; it links to the tools and shows which version each one is running. The
+        sign-in is not a general-purpose identity provider and is not offered as a standalone product;
+        you encounter it only because it is what one of the tools uses to sign you in. None of it is a
+        game client, a cheat, or a service operated by the developer of Egg, Inc. The hosted instance is
+        run by an individual, David Cole, not a company.
     </p>
 </section>
 
@@ -22,23 +26,70 @@
         <a href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">github.com/EggIncTools</a>.
         Both it and the hosted instance are offered "as is", without warranty of any kind, express or
         implied. There is no guarantee that any of it will be available, uninterrupted, or accurate.
-        Use it at your own risk.
+        You, and any tool that relies on it, use it at your own risk.
     </p>
 </section>
 
 <section class="prose-legal prose-legal-section">
     <h2>Acceptable use</h2>
     <p>
-        Do not attempt to break, overload, or gain unauthorized access to the hub or the tools behind
-        it. Automated traffic that degrades the service for others may be blocked.
+        When you use the hub or the shared sign-in, directly or through a tool that relies on it, you
+        agree not to:
+    </p>
+    <ul>
+        <li>Attempt to break, overload, or gain unauthorized access to the hub or the tools behind it.</li>
+        <li>Attempt to bypass its authentication, session, or access controls.</li>
+        <li>Impersonate another user or forge session credentials.</li>
+        <li>Send excessive or abusive load to its login, session, or sponsor-sync endpoints. Automated traffic that degrades the service for others may be blocked.</li>
+        <li>Use it to violate Egg, Inc.'s own terms of service or the rules of the game.</li>
+        <li>Use it for any unlawful purpose or to distribute malware.</li>
+    </ul>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Role and perk accuracy</h2>
+    <p>
+        Your role and supporter status are derived from what Discord, GitHub, and the operator's own
+        records report at the time they are checked. A reasonable effort is made to keep them in sync,
+        but real-time accuracy is not guaranteed; a role or perk shown by a tool can lag behind a change
+        made at the provider.
     </p>
 </section>
 
 <section class="prose-legal prose-legal-section">
-    <h2>Changes</h2>
+    <h2>Supporter program</h2>
     <p>
-        These terms may change as the suite changes. The date at the top is the last revision. See also
-        <button type="button" class="legal-link-btn" @onclick="OnOpenPrivacy">Privacy &amp; Cookies</button>.
+        Supporting the project through GitHub Sponsors is entirely voluntary. Billing, refunds, and
+        cancellation are governed by GitHub Sponsors' own terms, not by these. Perks granted through
+        this sync are offered in good faith and may change, be added, or be withdrawn at any time.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Limitation of liability</h2>
+    <p>
+        To the fullest extent permitted by law, the operator is not liable for any damages arising from
+        your use of, or inability to use, the hub, the shared sign-in, or any tool that relies on them.
+        This is a free suite maintained in spare time. You accept all risk of using it.
+    </p>
+</section>
+
+<section class="prose-legal prose-legal-section">
+    <h2>Changes and contact</h2>
+    <p>
+        This is a personal project. The operator may change, suspend, or discontinue any part of it,
+        including for the tools that depend on it, at any time and without notice. These terms may also
+        change as the suite changes; the date at the top is the last revision, and continued use after a
+        change means you accept the updated terms. Questions can go to the operator through the
+        <a href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">GitHub organization</a>
+        or the project
+        <a href="@ToolCatalog.DiscordUrl" target="_blank" rel="noopener">Discord server</a>.
+        See also
+        @if (OnOpenPrivacy.HasDelegate) {
+            <button type="button" class="legal-link-btn" @onclick="OnOpenPrivacy">Privacy &amp; Cookies</button>
+        } else {
+            <a href="/privacy">Privacy &amp; Cookies</a>
+        }.
     </p>
 </section>
 

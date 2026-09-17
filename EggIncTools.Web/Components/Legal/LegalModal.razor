@@ -1,13 +1,7 @@
 <ModalHost Open="@(Kind is not null)" Title="@Title" TitleId="legalModalTitle"
            Width="ModalWidth.Large" OnClose="OnClose">
     <div class="modal-body">
-        <p class="prose-legal-updated">Last updated @Updated</p>
-
-        <div class="legal-disclaimer">
-            EggInc.tools, like every tool it links to, is an independent, fan-made project and is not
-            affiliated with, endorsed by, or sponsored by Auxbrain Inc. Egg, Inc. and related marks are
-            the property of their respective owners.
-        </div>
+        <LegalHeader/>
 
         @if (Kind == "privacy") {
             <PrivacyContent OnOpenTerms="@(() => OnKindChange.InvokeAsync("terms"))"/>
@@ -18,8 +12,6 @@
 </ModalHost>
 
 @code {
-    public const string Updated = "10 September 2026";
-
     [Parameter] public string? Kind { get; set; }
 
     [Parameter] public EventCallback<string> OnKindChange { get; set; }
