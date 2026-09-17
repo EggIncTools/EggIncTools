@@ -1,7 +1,6 @@
 using EggIdentity.Contract;
 using EggIdentity.Deploy;
 using EggIdentity.Resilience;
-using EggIncTools.Shell;
 
 namespace EggIncTools.Web.Services;
 

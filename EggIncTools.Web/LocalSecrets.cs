@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Configuration;
-
 namespace EggIncTools.Web;
 
 internal static class LocalSecrets {

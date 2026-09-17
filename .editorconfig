@@ -93,6 +93,9 @@ dotnet_diagnostic.CA1822.severity = suggestion # 'mark static' must not force pu
 dotnet_diagnostic.CA1848.severity = suggestion # LoggerMessage source-gen: overkill for low-volume warn/info logging
 dotnet_diagnostic.CA1873.severity = suggestion # "expensive" log arg evaluation: our args are cheap string interpolations
 
+dotnet_diagnostic.IDE0008.severity = none
+dotnet_diagnostic.IDE0021.severity = none
+
 [*.{razor,cshtml}]
 dotnet_diagnostic.IDE0005.severity = none
 resharper_razor_always_use_end_of_line_brace_style = true

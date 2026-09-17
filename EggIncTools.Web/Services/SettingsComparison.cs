@@ -59,7 +59,7 @@ public sealed class SettingsComparison(
         var byApp = fetched.ToDictionary(
             f => f.App.App,
             f => f.Settings?.Settings.ToDictionary(s => s.Key, StringComparer.Ordinal)
-                ?? new Dictionary<string, AdminSettingWire>(StringComparer.Ordinal),
+                ?? [],
             StringComparer.Ordinal);
 
         var keys = byApp.Values

@@ -97,7 +97,7 @@ internal static class HostServices {
         builder.Services.AddEggIdentityPromotion();
         builder.Services.AddScoped<CurrentUser>();
         builder.Services.AddRazorComponents()
-            .AddInteractiveServerComponents(o => o.DetailedErrors = builder.Environment.IsProduction() is false);
+            .AddInteractiveServerComponents(o => o.DetailedErrors = !builder.Environment.IsProduction());
         builder.Services.AddEggIdentityDeployFromEnvironment("egginctools");
     }
 

@@ -18,6 +18,21 @@
     vertical-align: bottom;
 }
 
+.quad-cell-opt {
+    overflow: hidden;
+    animation: quad-shrink 7.3s steps(1, end) infinite;
+    animation-delay: calc(var(--word) * -1129ms - var(--slot) * 620ms);
+}
+
+@keyframes quad-shrink {
+    0%, 41% {
+        width: 0.62em;
+    }
+    42%, 100% {
+        width: 0;
+    }
+}
+
 .quad-face {
     grid-area: 1 / 1;
     opacity: 0;
@@ -43,6 +58,10 @@
 
 @media (prefers-reduced-motion: reduce) {
     .quad-face {
+        animation: none;
+    }
+
+    .quad-cell-opt {
         animation: none;
     }
 

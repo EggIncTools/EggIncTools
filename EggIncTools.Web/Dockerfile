@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0-preview AS build
 WORKDIR /src
 ENV NUGET_PACKAGES=/root/.nuget/packages
 
@@ -30,7 +30,7 @@ RUN set -eux; \
     dotnet publish EggIncTools.Web/EggIncTools.Web.csproj -c Release -o /app/publish $STAMP; \
     test -s /app/publish/wwwroot/styles.css
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:11.0-preview AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 

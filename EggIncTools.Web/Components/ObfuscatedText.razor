@@ -1,8 +1,8 @@
-<span class="quad-obfuscated" role="img" aria-label="@Announce" style="--glyphs: @Pattern.Length">@for (var i = 0; i < Pattern.Length; i++) {
-        if (Pattern[i] == ' ') {
+<span class="quad-obfuscated" role="img" aria-label="@Announce" style="--glyphs: @Pattern.Length">@foreach (var cell in Cells) {
+        if (cell.Gap) {
             <span class="quad-gap"> </span>
         } else {
-            <span class="quad-cell" style="--cell: @i">@foreach (var face in Faces(Seed + i)) {
+            <span class="@CellCss(cell)" style="@CellStyle(cell)">@foreach (var face in Faces(Seed + cell.Index)) {
                     <span class="quad-face" style="color: @face.Tint">@face.Glyph</span>
                 }</span>
         }
@@ -11,6 +11,8 @@
 @code {
     private const int FaceCount = 6;
     private const int TintOdds = 40;
+    private const int MinCore = 3;
+    private const int MaxOptional = 2;
 
     private static readonly char[] Glyphs =
         ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -37,6 +39,42 @@
             return seed & 0xffff;
         }
     }
+
+    private IReadOnlyList<Cell> Cells => BuildCells(Pattern);
+
+    private static IReadOnlyList<Cell> BuildCells(string pattern) {
+        var cells = new List<Cell>(pattern.Length);
+        var word = 0;
+        var i = 0;
+
+        while (i < pattern.Length) {
+            if (pattern[i] == ' ') {
+                cells.Add(new Cell(i, true, 0, -1));
+                i++;
+                continue;
+            }
+
+            var start = i;
+            while (i < pattern.Length && pattern[i] != ' ') i++;
+
+            var length = i - start;
+            var core = length - OptionalCount(length);
+            for (var k = 0; k < length; k++) cells.Add(new Cell(start + k, false, word, k < core ? -1 : k - core));
+
+            word++;
+        }
+
+        return cells;
+    }
+
+    private static int OptionalCount(int length) => length <= MinCore ? 0 : Math.Min(MaxOptional, length - MinCore);
+
+    private static string CellCss(Cell cell) => cell.Slot < 0 ? "quad-cell" : "quad-cell quad-cell-opt";
+
+    private static string CellStyle(Cell cell) =>
+        cell.Slot < 0 ? $"--cell: {cell.Index}" : $"--cell: {cell.Index}; --word: {cell.Word}; --slot: {cell.Slot}";
+
+    private sealed record Cell(int Index, bool Gap, int Word, int Slot);
 
     private static IEnumerable<Face> Faces(int cell) {
         for (var face = 0; face < FaceCount; face++) {
