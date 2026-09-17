@@ -55,7 +55,8 @@ internal static class HostServices {
 
     private static HostRuntime RegisterSettings(WebApplicationBuilder builder, NpgsqlDataSource dataSource) {
         var registry = SettingsRegistry.Compose(
-            [HubSettings.Provider, SessionSettings.Provider], [DeployApps.Provider, AdminTargets.Provider]);
+            [HubSettings.Provider, SessionSettings.Provider],
+            [DeployApps.Provider, DeployStacks.Provider, AdminTargets.Provider]);
         var store = new SettingsStore(dataSource, SecretProtector.FromEnvironment());
         var cache = new SettingsCache(registry, store);
 
@@ -95,6 +96,7 @@ internal static class HostServices {
         builder.Services.AddCascadingAuthenticationState();
         builder.Services.AddEggIdentitySettingsPanel();
         builder.Services.AddEggIdentityPromotion();
+        builder.Services.AddEggIdentityDeployToasts();
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents(o => o.DetailedErrors = !builder.Environment.IsProduction());
         builder.Services.AddEggIdentityDeployFromEnvironment("egginctools");

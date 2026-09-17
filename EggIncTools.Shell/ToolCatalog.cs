@@ -45,6 +45,7 @@ public static class ToolCatalog {
             ? raw
             : DefaultIdentityOrigin;
     }
+
     public const string DiscordUrl = $"https://discord.{HubHost}";
     public const string GitHubUrl = "https://github.com/EggIncTools";
     public const string AuthorUrl = "https://github.com/DavidArthurCole";

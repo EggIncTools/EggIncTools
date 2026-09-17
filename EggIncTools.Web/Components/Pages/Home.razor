@@ -14,42 +14,42 @@
                         <ConstructionLadder/>
                     }
                     <div class="quad-body">
-                    <div class="quad-head">
-                        <img class="quad-mark" src="@tool.IconUrl" alt="" width="512" height="512" style="@tool.MarkStyle"/>
+                        <div class="quad-head">
+                            <img class="quad-mark" src="@tool.IconUrl" alt="" width="512" height="512" style="@tool.MarkStyle"/>
+                            @if (tool.Live) {
+                                <a class="quad-name" href="@tool.Url">
+                                    <span class="quad-name-text">@tool.Name</span>
+                                    <Icon Name="external-link" Class="quad-name-out"/>
+                                </a>
+                            } else {
+                                <span class="quad-name">
+                                    <span class="quad-name-text">@tool.Name</span>
+                                </span>
+                            }
+                        </div>
+
                         @if (tool.Live) {
-                            <a class="quad-name" href="@tool.Url">
-                                <span class="quad-name-text">@tool.Name</span>
-                                <Icon Name="external-link" Class="quad-name-out"/>
-                            </a>
+                            <ul class="quad-points">
+                                @foreach (var point in tool.Points) {
+                                    <li>@point</li>
+                                }
+                            </ul>
                         } else {
-                            <span class="quad-name">
-                                <span class="quad-name-text">@tool.Name</span>
-                            </span>
+                            <div class="quad-pitch">
+                                @foreach (var line in ObfuscatedLines) {
+                                    <ObfuscatedText Pattern="@line" Announce="@($"{tool.Name} is not announced yet")"/>
+                                }
+                            </div>
                         }
-                    </div>
 
-                    @if (tool.Live) {
-                        <ul class="quad-points">
-                            @foreach (var point in tool.Points) {
-                                <li>@point</li>
-                            }
-                        </ul>
-                    } else {
-                        <div class="quad-pitch">
-                            @foreach (var line in ObfuscatedLines) {
-                                <ObfuscatedText Pattern="@line" Announce="@($"{tool.Name} is not announced yet")"/>
-                            }
-                        </div>
-                    }
-
-                    @if (health is { State: not ToolState.Unknown } state) {
-                        <div class="quad-foot">
-                            <span class="quad-state quad-state-@state.State.ToString().ToLowerInvariant()">@state.Label</span>
-                            @if (state.RunningVersion is { Length: > 0 } version) {
-                                <span class="quad-version">@version</span>
-                            }
-                        </div>
-                    }
+                        @if (health is { State: not ToolState.Unknown } state) {
+                            <div class="quad-foot">
+                                <span class="quad-state quad-state-@state.State.ToString().ToLowerInvariant()">@state.Label</span>
+                                @if (state.RunningVersion is { Length: > 0 } version) {
+                                    <span class="quad-version">@version</span>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
             </section>

@@ -1,4 +1,5 @@
 @page "/admin"
+@implements IDisposable
 @using EggIdentity.Auth
 @using EggIdentity.Contract
 @using EggIdentity.Settings.AdminUi
@@ -27,6 +28,7 @@
                 <button type="button" class="@ModeCss(Mode.App)" @onclick="@(() => _mode = Mode.App)">One app</button>
                 <button type="button" class="@ModeCss(Mode.Compare)" @onclick="ShowComparisonAsync">Compare all</button>
                 <button type="button" class="@ModeCss(Mode.Promote)" @onclick="@(() => _mode = Mode.Promote)">Promote</button>
+                <button type="button" class="@ModeCss(Mode.Fleet)" @onclick="@(() => _mode = Mode.Fleet)">Fleet</button>
                 <button type="button" class="btn-mini" disabled="@_busy" @onclick="ReloadAsync">
                     <Icon Name="refresh" Class="icon-sm"/>Reload
                 </button>
@@ -35,6 +37,8 @@
 
         @if (_mode == Mode.Promote) {
             <PromotionPanel UpdatedBy="@_userId"/>
+        } else if (_mode == Mode.Fleet) {
+            <FleetPanel/>
         } else if (_apps.Count == 0) {
             <p class="wb-note">
                 No admin targets are configured. Add rows to the admin.targets collection, then set
@@ -63,6 +67,7 @@
         App,
         Compare,
         Promote,
+        Fleet,
     }
 
     private const string LocalAppName = "EggIncTools";
@@ -79,6 +84,7 @@
     private string? _selected;
     private IReadOnlyList<AdminTargetStatus> _apps = [];
     private ComparisonReport? _report;
+    private DeployToastBridge? _deployToasts;
 
     private string? LocalApp => _hasLocalSettings ? LocalAppName : null;
 
@@ -106,6 +112,9 @@
 
         _checked = true;
         if (!_isAdmin) return;
+
+        _deployToasts = Services.GetService<DeployToastBridge>();
+        _deployToasts?.Start();
 
         _hasLocalSettings = Services.GetService<SettingsAdminService>() is not null;
 
@@ -153,4 +162,8 @@
 
     private string ModeCss(Mode mode) =>
         _mode == mode ? "btn-mini adm-mode adm-mode-on" : "btn-mini adm-mode";
+
+    public void Dispose() {
+        _deployToasts?.Dispose();
+    }
 }
