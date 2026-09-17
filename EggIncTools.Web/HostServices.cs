@@ -96,10 +96,13 @@ internal static class HostServices {
         builder.Services.AddCascadingAuthenticationState();
         builder.Services.AddEggIdentitySettingsPanel();
         builder.Services.AddEggIdentityPromotion();
-        builder.Services.AddEggIdentityDeployToasts();
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents(o => o.DetailedErrors = !builder.Environment.IsProduction());
         builder.Services.AddEggIdentityDeployFromEnvironment("egginctools");
+
+        if (builder.Services.Any(d => d.ServiceType == typeof(IDeployEvents))) {
+            builder.Services.AddEggIdentityDeployToasts();
+        }
     }
 
     private static void RegisterStatus(WebApplicationBuilder builder, HostConfig config) {
