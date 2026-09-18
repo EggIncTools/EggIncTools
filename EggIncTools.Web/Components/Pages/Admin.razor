@@ -29,6 +29,7 @@
                 <button type="button" class="@ModeCss(Mode.Compare)" @onclick="ShowComparisonAsync">Compare all</button>
                 <button type="button" class="@ModeCss(Mode.Promote)" @onclick="@(() => _mode = Mode.Promote)">Promote</button>
                 <button type="button" class="@ModeCss(Mode.Fleet)" @onclick="@(() => _mode = Mode.Fleet)">Fleet</button>
+                <button type="button" class="@ModeCss(Mode.Clone)" @onclick="@(() => _mode = Mode.Clone)">Clone</button>
                 <button type="button" class="btn-mini" disabled="@_busy" @onclick="ReloadAsync">
                     <Icon Name="refresh" Class="icon-sm"/>Reload
                 </button>
@@ -39,6 +40,8 @@
             <PromotionPanel UpdatedBy="@_userId"/>
         } else if (_mode == Mode.Fleet) {
             <FleetPanel/>
+        } else if (_mode == Mode.Clone) {
+            <ClonePanel/>
         } else if (_apps.Count == 0) {
             <p class="wb-note">
                 No admin targets are configured. Add rows to the admin.targets collection, then set
@@ -68,6 +71,7 @@
         Compare,
         Promote,
         Fleet,
+        Clone,
     }
 
     private const string LocalAppName = "EggIncTools";
