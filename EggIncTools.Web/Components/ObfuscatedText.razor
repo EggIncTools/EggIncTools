@@ -12,7 +12,11 @@
     private const int FaceCount = 6;
     private const int TintOdds = 40;
     private const int MinCore = 3;
-    private const int MaxOptional = 2;
+    private const int MaxOptional = 3;
+    private const int FlipMinMs = 900;
+    private const int FlipRangeMs = 2400;
+    private const int ShrinkMinMs = 3700;
+    private const int ShrinkRangeMs = 9100;
 
     private static readonly char[] Glyphs =
         ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -40,9 +44,9 @@
         }
     }
 
-    private IReadOnlyList<Cell> Cells => BuildCells(Pattern);
+    private IReadOnlyList<Cell> Cells => BuildCells(Pattern, Seed);
 
-    private static IReadOnlyList<Cell> BuildCells(string pattern) {
+    private static IReadOnlyList<Cell> BuildCells(string pattern, int seed) {
         var cells = new List<Cell>(pattern.Length);
         var word = 0;
         var i = 0;
@@ -58,7 +62,7 @@
             while (i < pattern.Length && pattern[i] != ' ') i++;
 
             var length = i - start;
-            var core = length - OptionalCount(length);
+            var core = length - OptionalCount(length, Hash(seed + word, 211));
             for (var k = 0; k < length; k++) cells.Add(new Cell(start + k, false, word, k < core ? -1 : k - core));
 
             word++;
@@ -67,12 +71,23 @@
         return cells;
     }
 
-    private static int OptionalCount(int length) => length <= MinCore ? 0 : Math.Min(MaxOptional, length - MinCore);
+    private static int OptionalCount(int length, int roll) {
+        if (length <= MinCore) return 0;
+        var headroom = Math.Min(MaxOptional, length - MinCore);
+        return roll % (headroom + 1);
+    }
 
     private static string CellCss(Cell cell) => cell.Slot < 0 ? "quad-cell" : "quad-cell quad-cell-opt";
 
-    private static string CellStyle(Cell cell) =>
-        cell.Slot < 0 ? $"--cell: {cell.Index}" : $"--cell: {cell.Index}; --word: {cell.Word}; --slot: {cell.Slot}";
+    private string CellStyle(Cell cell) {
+        var key = Seed + cell.Index;
+        var flip = FlipMinMs + Hash(key, 307) % FlipRangeMs;
+        var style = $"--cell: {cell.Index}; --flip: {flip}ms; --flip-lag: -{Hash(key, 409) % flip}ms";
+        if (cell.Slot < 0) return style;
+
+        var shrink = ShrinkMinMs + Hash(key, 523) % ShrinkRangeMs;
+        return $"{style}; --shrink: {shrink}ms; --shrink-lag: -{Hash(key, 757) % shrink}ms";
+    }
 
     private sealed record Cell(int Index, bool Gap, int Word, int Slot);
 

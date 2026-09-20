@@ -20,8 +20,8 @@
 
 .quad-cell-opt {
     overflow: hidden;
-    animation: quad-shrink 7.3s steps(1, end) infinite;
-    animation-delay: calc(var(--word) * -1129ms - var(--slot) * 620ms);
+    animation: quad-shrink var(--shrink, 7300ms) steps(1, end) infinite;
+    animation-delay: var(--shrink-lag, 0ms);
 }
 
 @keyframes quad-shrink {
@@ -36,8 +36,8 @@
 .quad-face {
     grid-area: 1 / 1;
     opacity: 0;
-    animation: quad-flip 1.8s steps(1, end) infinite;
-    animation-delay: calc(var(--cell) * -137ms - var(--face) * 300ms);
+    animation: quad-flip var(--flip, 1800ms) steps(1, end) infinite;
+    animation-delay: calc(var(--flip-lag, 0ms) - var(--face) * var(--flip, 1800ms) / 6);
 }
 
 .quad-face:nth-child(1) { --face: 0 }
