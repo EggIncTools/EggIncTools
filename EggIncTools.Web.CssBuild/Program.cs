@@ -22,7 +22,8 @@ if (!File.Exists(cssSourcePath)) {
     return 1;
 }
 
-var outputPath = Path.Combine(webProjectDir, "wwwroot", "styles.css");
+var outputDir = Path.Combine(webProjectDir, "wwwroot");
+var outputPath = Path.Combine(outputDir, "styles.css");
 var repoRoot = Path.GetFullPath(Path.Combine(webProjectDir, ".."));
 var contentFiles = ContentSources.Enumerate(repoRoot).ToList();
 
@@ -56,7 +57,7 @@ if (themeBody.Contains("--color-", StringComparison.Ordinal)) {
     return 1;
 }
 
-var contrastColors = new Dictionary<string, ThemeColor>();
+Dictionary<string, ThemeColor> contrastColors = [];
 foreach (var contrastName in BrandPalette.ContrastBaseTokens.Concat(BrandPalette.StatusTokens)) {
     var contrastValue = BrandPalette.ComponentColors.First(c => c.Name == contrastName).Value;
     if (ThemeColor.FromHex(contrastValue) is not { } themeColor) {
@@ -97,7 +98,7 @@ var compiledCss = framework.Process(candidates);
 var strippedRawCss = CssBuildText.StripApplyDirectives(sourceResult.RawCss);
 var finalCss = CssBuildText.UnwrapLayersAndSpliceRaw(compiledCss, UnwrapLayerWrappers(strippedRawCss));
 
-Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+Directory.CreateDirectory(outputDir);
 File.WriteAllText(outputPath, finalCss);
 
 Console.WriteLine($"Wrote {finalCss.Length} chars to {outputPath}");

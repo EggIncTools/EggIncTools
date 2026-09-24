@@ -108,7 +108,7 @@
             _isAdmin = state.User.IsAtLeast(UserRole.Admin);
             _userId = state.User.FindFirst("sub")?.Value;
 
-            if (!_isAdmin && !_wasRejected && state.User.Identity?.IsAuthenticated == true) {
+            if (!_isAdmin && !_wasRejected && state.User.Identity is { IsAuthenticated: true }) {
                 Nav.NavigateTo("/admin/reject", forceLoad: true);
                 return;
             }
@@ -167,7 +167,5 @@
     private string ModeCss(Mode mode) =>
         _mode == mode ? "btn-mini adm-mode adm-mode-on" : "btn-mini adm-mode";
 
-    public void Dispose() {
-        _deployToasts?.Dispose();
-    }
+    public void Dispose() => _deployToasts?.Dispose();
 }

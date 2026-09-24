@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using EggIdentity.Contract;
 using EggIdentity.Deploy;
 using EggIdentity.Resilience;
@@ -21,13 +22,13 @@ public sealed record ToolHealth(
 }
 
 public sealed class ToolStatusService(
-    IServiceProvider services,
     ToolRegistry registry,
-    TimeProvider? time = null) : BackgroundService {
+    ILogger<ToolStatusService> log,
+    TimeProvider time,
+    AgentClient? agent = null) : BackgroundService {
     private static readonly TimeSpan Interval = TimeSpan.FromSeconds(60);
     private static readonly TimeSpan ProbeTimeout = TimeSpan.FromSeconds(5);
 
-    private readonly TimeProvider _clock = time ?? TimeProvider.System;
     private volatile IReadOnlyDictionary<string, ToolHealth> _snapshot =
         new Dictionary<string, ToolHealth>(StringComparer.OrdinalIgnoreCase);
 
@@ -38,7 +39,6 @@ public sealed class ToolStatusService(
     public ToolHealth? For(string slug) => _snapshot.GetValueOrDefault(slug);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
-        var log = services.GetRequiredService<ILogger<ToolStatusService>>();
         while (!stoppingToken.IsCancellationRequested) {
             try {
                 await PollOnceAsync(stoppingToken);
@@ -46,7 +46,7 @@ public sealed class ToolStatusService(
                 log.LogError(exc, "tool status poll failed");
             }
             try {
-                await Task.Delay(Interval, _clock, stoppingToken);
+                await Task.Delay(Interval, time, stoppingToken);
             } catch (OperationCanceledException) {
                 return;
             }
@@ -56,7 +56,7 @@ public sealed class ToolStatusService(
     public async Task PollOnceAsync(CancellationToken ct) {
         var versions = await ReadVersionsAsync(ct);
         var tools = await registry.ToolsAsync(ct);
-        var now = _clock.GetUtcNow();
+        var now = time.GetUtcNow();
 
         _snapshot = tools
             .Where(tool => tool.Live)
@@ -68,8 +68,7 @@ public sealed class ToolStatusService(
                 ((Action)handler)();
             } catch (Exception exc) when (exc is not OperationCanceledException) {
                 Changed -= (Action)handler;
-                services.GetRequiredService<ILogger<ToolStatusService>>()
-                    .LogDebug(exc, "dropped a stale tool status subscriber");
+                log.LogDebug(exc, "dropped a stale tool status subscriber");
             }
         }
     }
@@ -88,13 +87,13 @@ public sealed class ToolStatusService(
     }
 
     private async Task<IReadOnlyDictionary<string, DeployStatus>> ReadVersionsAsync(CancellationToken ct) {
-        var agent = services.GetService<AgentClient>();
-        if (agent is null) return new Dictionary<string, DeployStatus>(StringComparer.OrdinalIgnoreCase);
+        if (agent is null) return FrozenDictionary<string, DeployStatus>.Empty;
         try {
-            var all = await Deadline.RunAsync("agent status", agent.GetAllStatusAsync, ProbeTimeout, _clock, ct);
+            var all = await Deadline.RunAsync("agent status", agent.GetAllStatusAsync, ProbeTimeout, time, ct);
             return all.ToDictionary(s => s.App, s => s, StringComparer.OrdinalIgnoreCase);
         } catch (Exception exc) when (exc is not OperationCanceledException) {
-            return new Dictionary<string, DeployStatus>(StringComparer.OrdinalIgnoreCase);
+            log.LogDebug(exc, "deploy agent status read failed; tool cards show no version");
+            return FrozenDictionary<string, DeployStatus>.Empty;
         }
     }
 }

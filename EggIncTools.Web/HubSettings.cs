@@ -13,6 +13,10 @@ public static class HubSettings {
     public const string AdminPolicy = "EggIncToolsAdmin";
     public const ushort DefaultPort = 8090;
 
+    public static bool FlagSet(string env) =>
+        Environment.GetEnvironmentVariable(env) is { } flag
+        && (flag.Equals("true", StringComparison.OrdinalIgnoreCase) || flag == "1");
+
     private const string Core = "Core";
     private const string Build = "Build";
     private const string Deploy = "Deploy";

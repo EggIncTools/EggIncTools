@@ -3,7 +3,7 @@ using EggIdentity.Contract;
 namespace EggIncTools.Web.Services;
 
 public sealed record LocalAdminSettings(UserRole Role) {
-    public static readonly Guid UserId = new("00000000-0000-4000-8000-000000000002");
+    public static Guid UserId { get; } = new("00000000-0000-4000-8000-000000000002");
 
     public string RoleName => UserRoles.ToName(Role);
 
@@ -16,9 +16,7 @@ public static class LocalAdminGate {
 
     public static IReadOnlyList<string> AllowedEnvironments { get; } = ["Development", "Staging"];
 
-    public static bool Requested =>
-        Environment.GetEnvironmentVariable(EnabledEnv) is { } flag
-        && (flag.Equals("true", StringComparison.OrdinalIgnoreCase) || flag == "1");
+    public static bool Requested => HubSettings.FlagSet(EnabledEnv);
 
     public static bool IsOn(string environmentName) => Requested && IsAllowed(environmentName);
 
@@ -26,7 +24,7 @@ public static class LocalAdminGate {
         if (!Requested || IsAllowed(environmentName)) return;
 
         throw new InvalidOperationException(
-            $"{EnabledEnv} is set but ASPNETCORE_ENVIRONMENT is \"{environmentName}\". This switch bypasses "
+            $"""{EnabledEnv} is set but ASPNETCORE_ENVIRONMENT is "{environmentName}". This switch bypasses """
             + $"authentication entirely and only loads in {string.Join(" or ", AllowedEnvironments)}. "
             + $"Unset {EnabledEnv} or fix ASPNETCORE_ENVIRONMENT.");
     }

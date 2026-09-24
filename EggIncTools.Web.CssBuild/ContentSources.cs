@@ -1,7 +1,9 @@
+using System.Collections.Frozen;
+
 namespace EggIncTools.Web.CssBuild;
 
 public static class ContentSources {
-    private static readonly string[] SkippedSegments = ["bin", "obj", "Tests"];
+    private static readonly FrozenSet<string> SkippedSegments = FrozenSet.Create(StringComparer.Ordinal, "bin", "obj", "Tests");
 
     public static IReadOnlyList<string> MarkupProjects { get; } = [
         "EggIncTools.Web",
@@ -24,6 +26,6 @@ public static class ContentSources {
 
     private static bool IsSkipped(string relativePath) {
         var segments = relativePath.Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar], StringSplitOptions.RemoveEmptyEntries);
-        return segments.Take(segments.Length - 1).Any(segment => SkippedSegments.Contains(segment, StringComparer.Ordinal));
+        return segments.Take(segments.Length - 1).Any(SkippedSegments.Contains);
     }
 }

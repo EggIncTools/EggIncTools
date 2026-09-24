@@ -125,7 +125,5 @@
         if (_status is not null) _status.Changed -= OnStatusChanged;
     }
 
-    private void OnStatusChanged() {
-        _ = InvokeAsync(StateHasChanged);
-    }
+    private void OnStatusChanged() => _ = InvokeAsync(StateHasChanged);
 }

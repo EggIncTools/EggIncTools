@@ -27,6 +27,8 @@ public sealed record ComparisonReport(IReadOnlyList<CompareApp> Apps, IReadOnlyL
     public static ComparisonReport Empty { get; } = new([], []);
 }
 
+internal sealed record FetchedSettings(CompareApp App, AdminSettingsResponse? Settings);
+
 public sealed class SettingsComparison(
     AdminTargetsService targets, AdminApiClient client, ILogger<SettingsComparison> log) {
     public async Task<ComparisonReport> BuildAsync(bool refresh = false, CancellationToken ct = default) {
@@ -37,15 +39,14 @@ public sealed class SettingsComparison(
         return new ComparisonReport([.. fetched.Select(f => f.App)], Pivot(fetched));
     }
 
-    private async Task<(CompareApp App, AdminSettingsResponse? Settings)> FetchAsync(
-        AdminTargetStatus status, CancellationToken ct) {
-        if (status.Target is not { } target) return (new CompareApp(status, null), null);
+    private async Task<FetchedSettings> FetchAsync(AdminTargetStatus status, CancellationToken ct) {
+        if (status.Target is not { } target) return new(new CompareApp(status, null), null);
 
         try {
-            return (new CompareApp(status, null), await client.GetSettingsAsync(target, ct));
+            return new(new CompareApp(status, null), await client.GetSettingsAsync(target, ct));
         } catch (Exception exc) when (exc is not OperationCanceledException) {
             log.LogWarning(exc, "could not read settings from {App}", status.App);
-            return (new CompareApp(status, Describe(exc)), null);
+            return new(new CompareApp(status, Describe(exc)), null);
         }
     }
 
@@ -54,8 +55,7 @@ public sealed class SettingsComparison(
             ? exc.Message
             : "this app did not answer with a settings document";
 
-    private static IReadOnlyList<CompareRow> Pivot(
-        IReadOnlyList<(CompareApp App, AdminSettingsResponse? Settings)> fetched) {
+    private static IReadOnlyList<CompareRow> Pivot(IReadOnlyList<FetchedSettings> fetched) {
         var byApp = fetched.ToDictionary(
             f => f.App.App,
             f => f.Settings?.Settings.ToDictionary(s => s.Key, StringComparer.Ordinal)
@@ -74,9 +74,9 @@ public sealed class SettingsComparison(
 
     private static CompareRow Row(
         string key,
-        IReadOnlyList<(CompareApp App, AdminSettingsResponse? Settings)> fetched,
+        IReadOnlyList<FetchedSettings> fetched,
         IReadOnlyDictionary<string, Dictionary<string, AdminSettingWire>> byApp) {
-        var any = byApp.Values.Select(s => s.GetValueOrDefault(key)).First(w => w is not null)!;
+        var any = byApp.Values.Select(s => s.GetValueOrDefault(key)).OfType<AdminSettingWire>().First();
 
         var cells = fetched.Select(f => {
             var wire = byApp[f.App.App].GetValueOrDefault(key);

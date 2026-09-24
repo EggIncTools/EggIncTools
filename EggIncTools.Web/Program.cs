@@ -78,8 +78,9 @@ public static class Program {
             });
 
             app.MapGet("/auth/redeem", async (
-                string? code, string? returnUrl, HttpContext ctx, IdentityApiClient identity, CancellationToken ct) => {
-                    var target = ToolCatalog.IsAllowedReturn(returnUrl) ? returnUrl! : "/admin";
+                string? code, string? returnUrl, HttpContext ctx, IdentityApiClient identity,
+                TimeProvider time, ILoggerFactory loggers, CancellationToken ct) => {
+                    var target = ToolCatalog.IsAllowedReturn(returnUrl) ? returnUrl : "/admin";
                     if (string.IsNullOrEmpty(code)) return Results.Redirect(target);
 
                     try {
@@ -87,10 +88,9 @@ public static class Program {
                         SessionIssuer.IssueCookie(
                             ctx.Response, session,
                             new SessionUser(user.UserId.ToString(), null, user.Role, user.Username, user.Avatar, user.DiscordId),
-                            TimeProvider.System.GetUtcNow());
+                            time.GetUtcNow());
                     } catch (Exception exc) when (exc is HttpRequestException or TaskCanceledException) {
-                        app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Redeem")
-                            .LogWarning(exc, "could not redeem a login code against the identity API");
+                        loggers.CreateLogger("Redeem").LogWarning(exc, "could not redeem a login code against the identity API");
                         return Results.Redirect("/admin?signin=failed");
                     }
 

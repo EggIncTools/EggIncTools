@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+using System.Diagnostics.CodeAnalysis;
 using EggIdentity.Contract;
 
 namespace EggIncTools.Shell;
@@ -57,13 +59,13 @@ public static class ToolCatalog {
 
     private const double BaseGutter = 0.078125;
 
-    private static readonly Dictionary<string, double> Gutters = new(StringComparer.OrdinalIgnoreCase) {
+    private static readonly FrozenDictionary<string, double> Gutters = new Dictionary<string, double> {
         ["ledger"] = 0.15625,
         ["incognito"] = 0.21875,
         ["abacus"] = 0.09375,
         ["identity"] = 0.0546875,
         ["tools"] = BaseGutter,
-    };
+    }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
     public static string MarkStyleFor(string slug) {
         if (!Gutters.TryGetValue(slug, out var gutter) || gutter <= BaseGutter) return "";
@@ -112,7 +114,7 @@ public static class ToolCatalog {
     public static string SignOutUrlFor(string returnUrl) =>
         $"{SignOutUrl}?returnUrl={Uri.EscapeDataString(SafeReturn(returnUrl))}";
 
-    public static bool IsAllowedReturn(string? returnUrl) =>
+    public static bool IsAllowedReturn([NotNullWhen(true)] string? returnUrl) =>
         Uri.TryCreate(returnUrl, UriKind.Absolute, out var parsed)
         && (parsed.Scheme == Uri.UriSchemeHttps || parsed.IsLoopback)
         && (parsed.IsLoopback || ReturnHosts.Any(host => IsHostOrSubdomain(parsed.Host, host)));

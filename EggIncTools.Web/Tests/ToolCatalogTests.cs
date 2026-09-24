@@ -110,7 +110,7 @@ public class ToolCatalogTests {
 
     [Fact]
     public void ARejectedReturnIsReportedRatherThanSilentlyRewritten() {
-        var seen = new List<string>();
+        List<string> seen = [];
         var previous = ToolCatalog.OnReturnRejected;
         ToolCatalog.OnReturnRejected = host => seen.Add(host);
         try {

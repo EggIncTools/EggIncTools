@@ -37,15 +37,11 @@ internal static class HostServices {
 
         builder.Services.AddEggIdentityFallback(new FallbackBranding("Egg Inc Tools", BrandTokens.All));
         builder.Services.AddSingleton(config);
+        builder.Services.AddSingleton(TimeProvider.System);
 
-        NpgsqlDataSource? dataSource = null;
-        var runtime = new HostRuntime(null, null, null);
-
-        if (config.DatabaseEnabled) {
-            dataSource = NpgsqlDataSource.Create(config.ConnString!);
-            builder.Services.AddSingleton(_ => dataSource);
-            runtime = RegisterSettings(builder, dataSource);
-        }
+        var runtime = config.DatabaseEnabled
+            ? RegisterSettings(builder, config.ConnString)
+            : new HostRuntime(null, null, null);
 
         RegisterAuth(builder, config);
         RegisterStatus(builder, config);
@@ -53,7 +49,10 @@ internal static class HostServices {
         return runtime;
     }
 
-    private static HostRuntime RegisterSettings(WebApplicationBuilder builder, NpgsqlDataSource dataSource) {
+    private static HostRuntime RegisterSettings(WebApplicationBuilder builder, string connString) {
+        var dataSource = NpgsqlDataSource.Create(connString);
+        builder.Services.AddSingleton(_ => dataSource);
+
         var registry = SettingsRegistry.Compose(
             [HubSettings.Provider, SessionSettings.Provider],
             [DeployApps.Provider, DeployStacks.Provider, AdminTargets.Provider]);
@@ -85,7 +84,7 @@ internal static class HostServices {
             }
 
             builder.Services.AddHttpClient<IdentityApiClient>(c => {
-                c.BaseAddress = new Uri(config.IdentityApiUrl!);
+                c.BaseAddress = new Uri(config.IdentityApiUrl);
                 c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", config.IdentityApiSecret);
             });
             builder.Services.AddAuthentication(EggIdentitySessionDefaults.Scheme).AddEggIdentitySession(session);

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using EggIdentity.Auth;
 
 namespace EggIncTools.Web;
@@ -11,14 +12,15 @@ public sealed class HostConfig {
     public required string? IdentityApiSecret { get; init; }
     public bool AuthEnabled => SessionOptions is not null;
 
+    [MemberNotNullWhen(true, nameof(IdentityApiUrl), nameof(IdentityApiSecret))]
     public bool IdentityApiEnabled =>
         IdentityApiUrl is { Length: > 0 } && IdentityApiSecret is { Length: > 0 };
 
+    [MemberNotNullWhen(true, nameof(ConnString))]
     public bool DatabaseEnabled => ConnString is { Length: > 0 };
 
     public static HostConfig FromEnvironment() {
-        var hubOnly = Environment.GetEnvironmentVariable(HubSettings.HubOnlyEnv) is { } flag
-            && (flag.Equals("true", StringComparison.OrdinalIgnoreCase) || flag == "1");
+        var hubOnly = HubSettings.FlagSet(HubSettings.HubOnlyEnv);
 
         var connString = Environment.GetEnvironmentVariable(HubSettings.ConnStringEnv);
         if (!hubOnly && string.IsNullOrEmpty(connString)) {
