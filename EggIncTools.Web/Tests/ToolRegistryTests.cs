@@ -71,7 +71,7 @@ public class ToolRegistryTests {
     private static ToolEntry Find(IReadOnlyList<ToolEntry> tools, string slug) =>
         tools.Single(t => t.Slug == slug);
 
-    private static DeployApp App(
+    private static SuiteApp App(
         string name,
         string? slug = null,
         string? url = null,

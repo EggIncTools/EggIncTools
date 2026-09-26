@@ -1,4 +1,3 @@
-using EggIdentity.Deploy;
 using EggIdentity.Settings;
 using EggIncTools.Shell;
 
@@ -19,7 +18,6 @@ public static class HubSettings {
 
     private const string Core = "Core";
     private const string Build = "Build";
-    private const string Deploy = "Deploy";
 
     public static ISettingsProvider Provider { get; } = new StaticSettingsProvider([
         new SettingDescriptor(
@@ -43,14 +41,9 @@ public static class HubSettings {
             Description = "Stamped into the image at build time.",
         },
         new SettingDescriptor(
-            "deploy.agent_url", DeployOptions.AgentUrlEnv, "Deploy agent URL", Deploy,
-            SettingKind.Url, ApplyTier.Bootstrap, Sensitivity.Plain) {
-            Description = "Base URL of eggidentity-agent. Supplies the running version shown on each tool card.",
-        },
-        new SettingDescriptor(
             "identity.api_url", ApiUrlEnv, "Identity API URL", Core,
             SettingKind.Url, ApplyTier.Bootstrap, Sensitivity.Plain) {
-            Description = "Internal base address of the EggIdentity API. Session revocation is checked against it, so sign-in is refused without it.",
+            Description = "Internal base address of the EggIdentity API. Session revocation and fleet status are both read from it, so sign-in is refused without it.",
             Required = true,
         },
         new SettingDescriptor(

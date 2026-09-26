@@ -25,7 +25,7 @@ public sealed class ToolStatusService(
     ToolRegistry registry,
     ILogger<ToolStatusService> log,
     TimeProvider time,
-    AgentClient? agent = null) : BackgroundService {
+    FleetClient? fleet = null) : BackgroundService {
     private static readonly TimeSpan Interval = TimeSpan.FromSeconds(60);
     private static readonly TimeSpan ProbeTimeout = TimeSpan.FromSeconds(5);
 
@@ -87,12 +87,12 @@ public sealed class ToolStatusService(
     }
 
     private async Task<IReadOnlyDictionary<string, DeployStatus>> ReadVersionsAsync(CancellationToken ct) {
-        if (agent is null) return FrozenDictionary<string, DeployStatus>.Empty;
+        if (fleet is null) return FrozenDictionary<string, DeployStatus>.Empty;
         try {
-            var all = await Deadline.RunAsync("agent status", agent.GetAllStatusAsync, ProbeTimeout, time, ct);
+            var all = await Deadline.RunAsync("fleet status", fleet.GetAllStatusAsync, ProbeTimeout, time, ct);
             return all.ToDictionary(s => s.App, s => s, StringComparer.OrdinalIgnoreCase);
         } catch (Exception exc) when (exc is not OperationCanceledException) {
-            log.LogDebug(exc, "deploy agent status read failed; tool cards show no version");
+            log.LogDebug(exc, "fleet status read failed; tool cards show no version");
             return FrozenDictionary<string, DeployStatus>.Empty;
         }
     }

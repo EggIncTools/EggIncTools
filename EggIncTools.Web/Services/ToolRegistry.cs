@@ -9,7 +9,7 @@ public sealed class ToolRegistry(SettingsCache cache, ILogger<ToolRegistry> log)
     public async Task<IReadOnlyList<ToolEntry>> ToolsAsync(CancellationToken ct = default) =>
         Apply(await RowsAsync(ct));
 
-    public static IReadOnlyList<ToolEntry> Apply(IReadOnlyList<DeployApp> registered) {
+    public static IReadOnlyList<ToolEntry> Apply(IReadOnlyList<SuiteApp> registered) {
         if (registered.Count == 0) return ToolCatalog.All;
 
         var bySlug = registered
@@ -21,34 +21,34 @@ public sealed class ToolRegistry(SettingsCache cache, ILogger<ToolRegistry> log)
             .Select(tool => bySlug.TryGetValue(tool.Slug, out var app) ? Merge(tool, app) : tool)];
     }
 
-    public async Task<IReadOnlyList<DeployApp>> RowsAsync(CancellationToken ct = default) {
+    public async Task<IReadOnlyList<SuiteApp>> RowsAsync(CancellationToken ct = default) {
         try {
             var snapshot = await cache.GetAsync(ct);
-            return [.. snapshot.Rows(DeployApps.Key).Select(Project).OfType<DeployApp>()];
+            return [.. snapshot.Rows(SuiteApps.Key).Select(Project).OfType<SuiteApp>()];
         } catch (Exception exc) when (exc is not OperationCanceledException) {
-            log.LogWarning(exc, "could not read {Collection}; falling back to the built-in catalog", DeployApps.Key);
+            log.LogWarning(exc, "could not read {Collection}; falling back to the built-in catalog", SuiteApps.Key);
             return [];
         }
     }
 
-    private DeployApp? Project(CollectionRow row) {
+    private SuiteApp? Project(CollectionRow row) {
         try {
-            var app = CollectionBinder.Bind<DeployApp>(row.Values);
+            var app = CollectionBinder.Bind<SuiteApp>(row.Values);
             return string.IsNullOrWhiteSpace(app.Name) ? app with { Name = row.Id } : app;
         } catch (Exception exc) when (exc is not OperationCanceledException) {
-            log.LogWarning(exc, "skipping malformed {Collection} row {Row}", DeployApps.Key, row.Id);
+            log.LogWarning(exc, "skipping malformed {Collection} row {Row}", SuiteApps.Key, row.Id);
             return null;
         }
     }
 
-    private static string? ResolveSlug(DeployApp app) {
+    private static string? ResolveSlug(SuiteApp app) {
         if (!string.IsNullOrWhiteSpace(app.BrandSlug)) return ToolCatalog.Find(app.BrandSlug)?.Slug;
 
         return ToolCatalog.All.FirstOrDefault(t =>
             string.Equals(t.App, app.Name, StringComparison.OrdinalIgnoreCase))?.Slug;
     }
 
-    private static ToolEntry Merge(ToolEntry tool, DeployApp app) {
+    private static ToolEntry Merge(ToolEntry tool, SuiteApp app) {
         var url = app.PublicUrl?.TrimEnd('/');
         return tool with {
             Url = string.IsNullOrWhiteSpace(url) ? tool.Url : url,

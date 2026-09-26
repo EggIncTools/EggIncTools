@@ -9,6 +9,7 @@ using EggIdentity.Settings;
 using EggIdentity.Settings.AdminUi;
 using EggIdentity.Settings.Api;
 using EggIdentity.Settings.Store;
+using EggIdentity.Suite.AdminUi;
 using EggIncTools.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -55,7 +56,7 @@ internal static class HostServices {
 
         var registry = SettingsRegistry.Compose(
             [HubSettings.Provider, SessionSettings.Provider],
-            [DeployApps.Provider, DeployStacks.Provider, AdminTargets.Provider]);
+            [SuiteApps.Provider]);
         var store = new SettingsStore(dataSource, SecretProtector.FromEnvironment());
         var cache = new SettingsCache(registry, store);
 
@@ -66,6 +67,7 @@ internal static class HostServices {
         builder.Services.AddSingleton<AdminTargetsService>();
         builder.Services.AddHttpClient<AdminApiClient>(http => http.Timeout = AdminApiTimeout);
         builder.Services.AddScoped<SettingsComparison>();
+        builder.Services.AddEggIdentitySuiteAdmin();
 
         return new HostRuntime(dataSource, store, cache);
     }
@@ -94,7 +96,6 @@ internal static class HostServices {
             .AddPolicy(HubSettings.AdminPolicy, policy => policy.RequireAssertion(ctx => ctx.User.IsAtLeast(UserRole.Admin)));
         builder.Services.AddCascadingAuthenticationState();
         builder.Services.AddEggIdentitySettingsPanel();
-        builder.Services.AddEggIdentityPromotion();
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents(o => o.DetailedErrors = !builder.Environment.IsProduction());
         builder.Services.AddEggIdentityDeployFromEnvironment("egginctools");

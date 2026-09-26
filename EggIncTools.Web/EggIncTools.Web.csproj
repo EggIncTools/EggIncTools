@@ -21,6 +21,7 @@
     <PackageReference Include="EggIdentity.Settings.AdminUi" />
     <PackageReference Include="EggIdentity.Settings.Api" />
     <PackageReference Include="EggIdentity.Settings.Store" />
+    <PackageReference Include="EggIdentity.Suite.AdminUi" />
     <PackageReference Include="EggIdentity.UI" />
   </ItemGroup>
 

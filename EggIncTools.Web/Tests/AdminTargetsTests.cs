@@ -1,3 +1,4 @@
+using EggIdentity.Deploy;
 using EggIdentity.Settings.Api;
 using Xunit;
 
@@ -51,11 +52,11 @@ public class AdminTargetsTests {
     }
 
     [Fact]
-    public void TheAdminTargetsCollectionHasNoFieldThatCouldHoldASecret() {
-        var names = AdminTargets.Descriptor.Fields.Select(f => f.Name).ToList();
+    public void TheSuiteAppsAdminFacetHasNoFieldThatCouldHoldASecret() {
+        var admin = SuiteApps.Descriptor.Fields.Where(f => f.Group == SuiteApps.AdminGroup).ToList();
 
-        Assert.Equal(["name", "admin_base_url", "enabled"], names);
-        Assert.DoesNotContain(AdminTargets.Descriptor.Fields, f => f.IsSecret);
+        Assert.Equal(["admin_base_url"], admin.Select(f => f.Name));
+        Assert.DoesNotContain(admin, f => f.IsSecret);
     }
 
     [Fact]
