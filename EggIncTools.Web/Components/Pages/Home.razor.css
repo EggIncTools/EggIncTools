@@ -185,42 +185,24 @@ a.quad-name:hover ::deep .quad-name-out {
     line-height: 1.55;
 }
 
-.quad-foot {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
-    font-family: var(--font-mono);
-    font-size: clamp(0.75rem, 1.8cqi, 1.6rem);
+.quad-tag {
+    flex: none;
+    align-self: center;
+    padding: 0.15em 0.55em;
+    border: 1px solid currentColor;
+    border-radius: 5px;
+    font-size: clamp(0.7rem, 1.5cqi, 1.3rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 
-.quad-version {
-    color: var(--color-muted);
-}
-
-.quad-state {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45em;
-    color: var(--color-muted);
-}
-
-.quad-state::before {
-    content: "";
-    width: 0.55em;
-    height: 0.55em;
-    border-radius: 999px;
-    background: currentColor;
-}
-
-.quad-state-up {
-    color: var(--color-ok);
-}
-
-.quad-state-deploying {
+.quad-tag-deploying {
     color: var(--color-accent);
 }
 
-.quad-state-failed {
+.quad-tag-failed {
     color: var(--color-err);
 }
 

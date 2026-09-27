@@ -22,56 +22,29 @@
         <ToastHost/>
         <header class="adm-head">
             <h1 class="adm-title">Admin</h1>
-            <div class="adm-modes">
-                <button type="button" class="@ModeCss(Mode.Suite)" @onclick="@(() => _mode = Mode.Suite)">Suite</button>
-                <button type="button" class="@ModeCss(Mode.Compare)" @onclick="ShowComparisonAsync">Compare all</button>
-                <button type="button" class="@ModeCss(Mode.Fleet)" @onclick="@(() => _mode = Mode.Fleet)">Fleet</button>
-                <button type="button" class="btn-mini" disabled="@_busy" @onclick="ReloadAsync">
-                    <Icon Name="refresh" Class="icon-sm"/>Reload
-                </button>
-            </div>
+            <button type="button" class="btn-mini" title="Reload" aria-label="Reload" @onclick="Reload">
+                <Icon Name="refresh" Class="icon-sm"/>
+            </button>
         </header>
-
-        @if (_mode == Mode.Fleet) {
-            <FleetPanel @key="_generation" OnOpenApps="@(() => _mode = Mode.Suite)"/>
-        } else if (_mode == Mode.Compare) {
-            <span class="adm-sub">Read-only across apps. Open Suite to change anything.</span>
-            @if (_report is null) {
-                <p class="wb-note">Reading every app...</p>
-            } else if (_report.Apps.Count == 0) {
-                <p class="wb-note">
-                    No suite.apps row has an admin base URL. Set one in Suite, then set
-                    ADMIN_SECRET_&lt;NAME&gt; on this host for each app.
-                </p>
-            } else {
-                <SettingsComparisonPane Report="@_report"/>
-            }
-        } else {
-            <SuitePanel @key="_generation" LocalApp="@LocalApp" IdentityHostApp="@IdentityHostApp" UpdatedBy="@_userId"/>
-        }
+        <SuitePanel @key="_generation" LocalApp="@LocalApp" IdentityHostApp="@IdentityHostApp" UpdatedBy="@_userId" Extras="@Extras"/>
     </main>
 }
 
 @code {
-    private enum Mode {
-        Suite,
-        Compare,
-        Fleet,
-    }
-
     private const string LocalApp = "egginctools";
     private const string IdentityHostApp = "eggidentity";
+
+    private static readonly IReadOnlyList<SuiteExtraView> Extras = [
+        new("compare", "Compare settings", @<ComparePane/>),
+    ];
 
     [CascadingParameter] private Task<AuthenticationState>? AuthStateTask { get; set; }
 
     private bool _isAdmin;
     private bool _checked;
     private bool _wasRejected;
-    private Mode _mode = Mode.Suite;
-    private bool _busy;
     private int _generation;
     private string? _userId;
-    private ComparisonReport? _report;
     private DeployToastBridge? _deployToasts;
 
     private string AdminUrl =>
@@ -98,30 +71,7 @@
         _deployToasts?.Start();
     }
 
-    private async Task ReloadAsync() {
-        _busy = true;
-        try {
-            _generation++;
-            _report = null;
-            if (_mode == Mode.Compare) await BuildComparisonAsync(refresh: true);
-        } finally {
-            _busy = false;
-        }
-    }
-
-    private async Task ShowComparisonAsync() {
-        _mode = Mode.Compare;
-        if (_report is null) await BuildComparisonAsync(refresh: false);
-    }
-
-    private async Task BuildComparisonAsync(bool refresh) {
-        _report = Services.GetService<SettingsComparison>() is { } comparison
-            ? await comparison.BuildAsync(refresh, CancellationToken.None)
-            : ComparisonReport.Empty;
-    }
-
-    private string ModeCss(Mode mode) =>
-        _mode == mode ? "btn-mini adm-mode adm-mode-on" : "btn-mini adm-mode";
+    private void Reload() => _generation++;
 
     public void Dispose() => _deployToasts?.Dispose();
 }

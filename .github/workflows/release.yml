@@ -38,10 +38,10 @@ jobs:
 
   notify-web:
     needs: docker-web
-    uses: EggIncTools/EggIdentity/.github/workflows/notify-agent.yml@main
+    uses: EggIncTools/EggIdentity/.github/workflows/notify-deploy.yml@main
     with:
       app: egginctools
-      agent-url: https://egghook.egginc.tools/agent
+      hook-url: https://id.egginc.tools
       digest: ${{ needs.docker-web.outputs.digest }}
       revision: ${{ github.sha }}
       version: ${{ github.ref_name }}

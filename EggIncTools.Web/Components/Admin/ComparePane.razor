@@ -1,0 +1,23 @@
+@inject IServiceProvider Services
+
+<p class="wb-note">Read-only across apps. Open an app to change anything.</p>
+@if (_report is null) {
+    <p class="wb-note">Reading every app...</p>
+} else if (_report.Apps.Count == 0) {
+    <p class="wb-note">
+        No suite.apps row has an admin base URL. Set one on the app, then set
+        ADMIN_SECRET_&lt;NAME&gt; on this host for each app.
+    </p>
+} else {
+    <SettingsComparisonPane Report="@_report"/>
+}
+
+@code {
+    private ComparisonReport? _report;
+
+    protected override async Task OnInitializedAsync() {
+        _report = Services.GetService<SettingsComparison>() is { } comparison
+            ? await comparison.BuildAsync(refresh: true, CancellationToken.None)
+            : ComparisonReport.Empty;
+    }
+}
