@@ -53,15 +53,15 @@
             <h1 class="hub-title">EggInc<span class="hub-title-dot">.</span>tools</h1>
 
             <p class="hub-by">
-                <span class="hub-by-label">Proudly presented by</span>
-                <a class="hub-chip hub-chip-org" href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">
+                <span>Proudly presented by</span>
+                <a class="hub-chip" href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">
                     <img class="hub-chip-mark" src="@ToolCatalog.HubIconUrl(512)" alt="" width="512" height="512"/>
-                    <span class="hub-chip-name">EggIncTools</span>
+                    <span>EggIncTools</span>
                 </a>
-                <span class="hub-by-amp">&amp;</span>
+                <span>&amp;</span>
                 <a class="hub-chip hub-chip-author" href="@ToolCatalog.AuthorUrl" target="_blank" rel="noopener">
-                    <Icon Name="brand-github" Class="hub-chip-icon"/>
-                    <span class="hub-chip-name">@ToolCatalog.AuthorName</span>
+                    <Icon Name="brand-github"/>
+                    <span>@ToolCatalog.AuthorName</span>
                 </a>
             </p>
 
@@ -76,7 +76,7 @@
                         <span>Discord features for supported apps</span>
                     </span>
                 </span>
-                <span class="hub-invite-cta">Join<Icon Name="arrow-right" Class="hub-invite-go"/></span>
+                <span class="hub-invite-cta">Join<Icon Name="arrow-right"/></span>
             </a>
         </div>
     </div>
@@ -84,10 +84,10 @@
     <footer class="hub-foot">
         <nav class="hub-foot-links">
             <a href="/privacy" @onclick="@(() => _legal = "privacy")" @onclick:preventDefault>
-                <Icon Name="file-text" Class="icon-xs"/>Privacy
+                <Icon Name="file-text"/>Privacy
             </a>
             <a href="/terms" @onclick="@(() => _legal = "terms")" @onclick:preventDefault>
-                <Icon Name="file-text" Class="icon-xs"/>Terms
+                <Icon Name="file-text"/>Terms
             </a>
         </nav>
         <p class="hub-disclaimer">

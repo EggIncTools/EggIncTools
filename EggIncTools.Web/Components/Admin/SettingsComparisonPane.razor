@@ -49,7 +49,7 @@
                 </thead>
                 <tbody>
                 @foreach (var row in Visible) {
-                    <tr class="@(row.Divergent ? "cmp-row cmp-row-diff" : "cmp-row")">
+                    <tr class="@(row.Divergent ? "cmp-row-diff" : null)">
                         <th scope="row" class="cmp-key">
                             <span class="cmp-key-label">@row.Label</span>
                             <span class="cmp-key-name">@row.Key</span>

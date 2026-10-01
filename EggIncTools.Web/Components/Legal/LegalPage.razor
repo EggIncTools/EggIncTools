@@ -1,0 +1,13 @@
+<main class="legal-page">
+    <article class="legal-page-body">
+        <h1 class="legal-page-title">@Title</h1>
+        <LegalHeader/>
+        @ChildContent
+    </article>
+</main>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

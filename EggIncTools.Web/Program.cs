@@ -2,6 +2,7 @@ using EggIdentity.Auth;
 using EggIdentity.Client;
 using EggIdentity.Fallback;
 using EggIdentity.Settings.Store;
+using EggIdentity.UI;
 using EggIncTools.Shell;
 using EggIncTools.Web.Components;
 using EggIncTools.Web.Services;
@@ -111,6 +112,7 @@ public static class Program {
         } else {
             app.MapGet("/health", () => Results.Text("ok"));
         }
+        app.MapAppVersion();
         app.MapRazorComponents<AppHost>().AddInteractiveServerRenderMode();
     }
 }

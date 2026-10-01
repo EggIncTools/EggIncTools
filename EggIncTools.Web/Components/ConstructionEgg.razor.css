@@ -8,12 +8,6 @@
     pointer-events: none;
 }
 
-@media (max-width: 48rem), (max-height: 34rem) {
-    .quad-soon-egg {
-        width: clamp(1.25rem, 7vw, 2rem);
-    }
-}
-
 .quad-soon-egg-art {
     display: block;
     width: 100%;
@@ -30,6 +24,9 @@
 }
 
 .egg-z {
+    --dx: 10px;
+    --dy: -22px;
+    --spin: 10deg;
     fill: var(--color-warn);
     font-family: var(--font-mono);
     font-weight: 700;
@@ -54,7 +51,13 @@
     }
     100% {
         opacity: 0;
-        transform: translate(var(--dx, 10px), var(--dy, -22px)) rotate(var(--spin, 10deg)) scale(1.2);
+        transform: translate(var(--dx), var(--dy)) rotate(var(--spin)) scale(1.2);
+    }
+}
+
+@media (max-width: 48rem), (max-height: 34rem) {
+    .quad-soon-egg {
+        width: clamp(1.25rem, 7vw, 2rem);
     }
 }
 

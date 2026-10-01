@@ -15,6 +15,8 @@ public static class BrandPalette {
     public static IReadOnlyList<(string Name, string Value)> AppColors { get; } = [
         ("warn", "#f0b232"),
         ("down", "#8992a4"),
+        ("github", "#a371f7"),
+        ("on-accent2", "#ffffff"),
     ];
 
     public static IReadOnlyList<string> StatusTokens { get; } = ["accent", "ok", "err"];

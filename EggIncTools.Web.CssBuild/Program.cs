@@ -24,8 +24,6 @@ if (!File.Exists(cssSourcePath)) {
 
 var outputDir = Path.Combine(webProjectDir, "wwwroot");
 var outputPath = Path.Combine(outputDir, "styles.css");
-var repoRoot = Path.GetFullPath(Path.Combine(webProjectDir, ".."));
-var contentFiles = ContentSources.Enumerate(repoRoot).ToList();
 
 var rawSourceText = File.ReadAllText(cssSourcePath);
 var applyGuardViolation = CssBuildText.FindSemicolonInsideApplyBracket(rawSourceText);
@@ -82,10 +80,6 @@ var splicedText = rawSourceText
     .Remove(themeHeaderIndex, "@theme {".Length)
     .Insert(themeHeaderIndex, "@theme {" + newline + colorDeclarations);
 
-Console.WriteLine($"Scanning {contentFiles.Count} content files for utility/component class tokens...");
-var candidates = CssBuildText.Scan(contentFiles);
-Console.WriteLine($"Found {candidates.Count} distinct candidate tokens.");
-
 var processor = new CssSourceProcessor(message => Console.WriteLine($"[monorail] {message}"));
 var sourceResult = processor.ProcessSource(splicedText, cssSourcePath, null);
 
@@ -93,10 +87,15 @@ var mergedApplies = ComponentClasses.All.SetItems(sourceResult.Settings.Applies)
 var settings = sourceResult.Settings with { Applies = mergedApplies };
 
 var framework = new CssFramework(settings);
-var compiledCss = framework.Process(candidates);
+var compiledCss = framework.Process(Array.Empty<string>());
+
+var rootBlock = new StringBuilder();
+rootBlock.Append(":root {").Append(newline).Append(colorDeclarations)
+    .Append("  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;").Append(newline)
+    .Append('}').Append(newline).Append(newline);
 
 var strippedRawCss = CssBuildText.StripApplyDirectives(sourceResult.RawCss);
-var finalCss = CssBuildText.UnwrapLayersAndSpliceRaw(compiledCss, UnwrapLayerWrappers(strippedRawCss));
+var finalCss = rootBlock + CssBuildText.UnwrapLayersAndSpliceRaw(compiledCss, UnwrapLayerWrappers(strippedRawCss));
 
 Directory.CreateDirectory(outputDir);
 File.WriteAllText(outputPath, finalCss);

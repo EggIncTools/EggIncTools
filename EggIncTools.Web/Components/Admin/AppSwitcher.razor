@@ -7,7 +7,7 @@
         <button type="button" class="@Css(enabled, selected)" disabled="@(!enabled)"
                 title="@status.Unavailable" aria-current="@(selected ? "true" : null)"
                 @onclick="@(() => OnSelect.InvokeAsync(status.App))">
-            <span class="asw-name">@status.App</span>
+            <span>@status.App</span>
             @if (!enabled) {
                 <Icon Name="lock" Class="icon-sm"/>
             }

@@ -8,6 +8,11 @@
     overflow: hidden;
 }
 
+.adm,
+.adm ::deep * {
+    user-select: text;
+}
+
 .adm-head {
     display: flex;
     align-items: center;

@@ -1,6 +1,6 @@
 @switch (Provider) {
     case "google":
-        <svg class="icon icon-xs eit-mark-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <defs>
                 <linearGradient id="@_stripeId" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stop-color="#ea4335"/>
@@ -17,7 +17,7 @@
         </svg>
         break;
     case "microsoft":
-        <svg class="icon icon-xs eit-mark-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <rect x="2" y="2" width="9" height="9" fill="#f25022"/>
             <rect x="13" y="2" width="9" height="9" fill="#7fba00"/>
             <rect x="2" y="13" width="9" height="9" fill="#00a4ef"/>
@@ -25,7 +25,7 @@
         </svg>
         break;
     default:
-        <Icon Name="@ToolCatalog.ProviderIcon(Provider)" Class="icon-xs"/>
+        <Icon Name="@ToolCatalog.ProviderIcon(Provider)"/>
         break;
 }
 

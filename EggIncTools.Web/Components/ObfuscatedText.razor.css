@@ -1,8 +1,10 @@
 .quad-obfuscated {
+    --gutter: 4rem;
+    --glyphs: 40;
     display: block;
     width: 100%;
     font-family: var(--font-mono);
-    font-size: min(1em, calc((100cqw - var(--gutter, 4rem)) / (var(--glyphs, 40) * 0.62)));
+    font-size: min(1em, calc((100cqw - var(--gutter)) / (var(--glyphs) * 0.62)));
     letter-spacing: 0.01em;
     white-space: nowrap;
     text-align: center;
@@ -14,14 +16,18 @@
 }
 
 .quad-cell {
+    --flip: 1800ms;
+    --flip-lag: 0ms;
+    --shrink: 7300ms;
+    --shrink-lag: 0ms;
     display: inline-grid;
     vertical-align: bottom;
 }
 
 .quad-cell-opt {
     overflow: hidden;
-    animation: quad-shrink var(--shrink, 7300ms) steps(1, end) infinite;
-    animation-delay: var(--shrink-lag, 0ms);
+    animation: quad-shrink var(--shrink) steps(1, end) infinite;
+    animation-delay: var(--shrink-lag);
 }
 
 @keyframes quad-shrink {
@@ -36,8 +42,8 @@
 .quad-face {
     grid-area: 1 / 1;
     opacity: 0;
-    animation: quad-flip var(--flip, 1800ms) steps(1, end) infinite;
-    animation-delay: calc(var(--flip-lag, 0ms) - var(--face) * var(--flip, 1800ms) / 6);
+    animation: quad-flip var(--flip) steps(1, end) infinite;
+    animation-delay: calc(var(--flip-lag) - var(--face) * var(--flip) / 6);
 }
 
 .quad-face:nth-child(1) { --face: 0 }

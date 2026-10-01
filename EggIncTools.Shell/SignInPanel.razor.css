@@ -1,4 +1,14 @@
 .eit-login {
+    --shell-brand-github: #a371f7;
+    --shell-brand-google: #4285f4;
+    --shell-brand-google-red: #ea4335;
+    --shell-brand-google-yellow: #fbbc05;
+    --shell-brand-google-green: #34a853;
+    --shell-brand-microsoft: #c8ccd4;
+    --shell-brand-microsoft-red: #f25022;
+    --shell-brand-microsoft-green: #7fba00;
+    --shell-brand-microsoft-blue: #00a4ef;
+    --shell-brand-microsoft-yellow: #ffb900;
     display: inline-flex;
     align-items: stretch;
 }
@@ -35,11 +45,14 @@
 }
 
 .eit-provider {
+    --brand: var(--color-fg);
+    --brand-rule: var(--brand);
+    --icon-size: 1.5em;
     display: inline-flex;
     align-items: center;
     gap: 0.5em;
     padding-inline: 0.6rem;
-    color: var(--brand, var(--color-fg));
+    color: var(--brand);
     font-weight: 600;
     font-synthesis-weight: none;
     text-decoration: none;
@@ -59,24 +72,16 @@
     bottom: 0;
     height: 2px;
     border-radius: 2px;
-    background: var(--brand-rule, var(--brand, var(--color-fg)));
+    background: var(--brand-rule);
     opacity: 0.55;
 }
 
 .eit-provider:hover {
-    background: color-mix(in oklab, var(--brand, var(--color-fg)) 16%, transparent);
+    background: color-mix(in oklab, var(--brand) 16%, transparent);
 }
 
 .eit-provider:hover .eit-provider-name::after {
     opacity: 1;
-}
-
-.eit-provider ::deep .icon,
-.eit-provider ::deep .eit-mark-svg {
-    flex: none;
-    width: 1.5em;
-    height: 1.5em;
-    color: var(--brand, currentColor);
 }
 
 .eit-provider-discord {
@@ -84,22 +89,22 @@
 }
 
 .eit-provider-github {
-    --brand: #a371f7;
-    --brand-rule: linear-gradient(90deg, var(--color-fg) 0%, #a371f7 100%);
+    --brand: var(--shell-brand-github);
+    --brand-rule: linear-gradient(90deg, var(--color-fg) 0%, var(--shell-brand-github) 100%);
 }
 
 .eit-provider-github:hover {
-    background: color-mix(in oklab, #a371f7 22%, transparent);
+    background: color-mix(in oklab, var(--shell-brand-github) 22%, transparent);
 }
 
 .eit-provider-google {
-    --brand: #4285f4;
-    --brand-rule: linear-gradient(90deg, #4285f4 0%, #ea4335 34%, #fbbc05 67%, #34a853 100%);
+    --brand: var(--shell-brand-google);
+    --brand-rule: linear-gradient(90deg, var(--shell-brand-google) 0%, var(--shell-brand-google-red) 34%, var(--shell-brand-google-yellow) 67%, var(--shell-brand-google-green) 100%);
 }
 
 .eit-provider-microsoft {
-    --brand: #c8ccd4;
-    --brand-rule: linear-gradient(90deg, #f25022 0%, #7fba00 34%, #00a4ef 67%, #ffb900 100%);
+    --brand: var(--shell-brand-microsoft);
+    --brand-rule: linear-gradient(90deg, var(--shell-brand-microsoft-red) 0%, var(--shell-brand-microsoft-green) 34%, var(--shell-brand-microsoft-blue) 67%, var(--shell-brand-microsoft-yellow) 100%);
 }
 
 @media (max-width: 48rem), (max-height: 34rem) {

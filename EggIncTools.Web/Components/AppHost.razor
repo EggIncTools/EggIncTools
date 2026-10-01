@@ -25,24 +25,9 @@
     <HeadOutlet @rendermode="@RenderMode"/>
 </head>
 <body>
-<div id="components-reconnect-modal">
-    <div class="eit-reconnect-card">
-        <p class="eit-reconnect-title">Connection lost</p>
-        <p class="eit-reconnect-line eit-reconnect-rejoin">Rejoining EggInc.tools</p>
-        <p class="eit-reconnect-line eit-reconnect-wait">
-            Attempt <span id="components-reconnect-current-attempt"></span>
-            of <span id="components-reconnect-max-retries"></span>.
-            Retrying in <span id="components-seconds-to-next-attempt"></span>s.
-        </p>
-        <p class="eit-reconnect-line eit-reconnect-gone">
-            Could not reconnect. <a href="">Reload the page</a> to continue.
-        </p>
-    </div>
-</div>
-
+<ReconnectModal/>
 <Routes @rendermode="@RenderMode"/>
-<script src="_framework/blazor.web.js" autostart="false"></script>
-<script src="@($"/circuit.js?v={AssetVersion}")"></script>
+<script src="_framework/blazor.web.js"></script>
 </body>
 </html>
 
