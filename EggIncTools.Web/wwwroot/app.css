@@ -1,0 +1,89 @@
+:root {
+  --color-bg: #0b0d12;
+  --color-panel0: #10131b;
+  --color-panel: #161a24;
+  --color-panel2: #1a1f2c;
+  --color-fg: #f3f5f9;
+  --color-muted: #8992a4;
+  --color-accent: #7aa2ff;
+  --color-accent2: #5865f2;
+  --color-ok: #3fb950;
+  --color-err: #f85149;
+  --color-border: #262c3a;
+  --color-warn: #f0b232;
+  --color-down: #8992a4;
+  --color-github: #a371f7;
+  --color-on-accent2: #ffffff;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+*,
+::before,
+::after {
+  border-color: var(--color-border);
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+}
+
+input,
+textarea,
+select,
+[contenteditable] {
+  user-select: text;
+}
+
+img,
+svg {
+  -webkit-user-drag: none;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+.legal-link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.legal-link-btn:hover {
+  color: var(--color-accent2);
+}
+
+.prose-legal-section {
+  margin-bottom: 1.75rem;
+}
+
+.prose-legal-updated {
+  margin: 0 0 1rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 48rem), (max-height: 34rem) {
+  html,
+  body {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+}

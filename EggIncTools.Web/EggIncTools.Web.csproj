@@ -21,6 +21,7 @@
     <PackageReference Include="EggIdentity.Settings.AdminUi" />
     <PackageReference Include="EggIdentity.Settings.Api" />
     <PackageReference Include="EggIdentity.Settings.Store" />
+    <PackageReference Include="EggIdentity.Styles" />
     <PackageReference Include="EggIdentity.Suite.AdminUi" />
     <PackageReference Include="EggIdentity.UI" />
   </ItemGroup>
@@ -28,42 +29,5 @@
   <ItemGroup>
     <ProjectReference Include="..\EggIncTools.Shell\EggIncTools.Shell.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\EggIncTools.Web.CssBuild\EggIncTools.Web.CssBuild.csproj" ReferenceOutputAssembly="false" Private="false" PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot\styles.css" />
-    <Content Include="wwwroot\styles.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_StylesInput Include="Styles\app.css" />
-    <_StylesInput Include="**\*.razor;**\*.razor.cs" Exclude="bin\**;obj\**;Tests\**" />
-    <_StylesInput Include="..\EggIncTools.Shell\**\*.razor;..\EggIncTools.Shell\**\*.razor.cs" />
-  </ItemGroup>
-
-  <Target Name="ResolveCssBuildPath" DependsOnTargets="ResolveProjectReferences">
-    <ItemGroup>
-      <_CssBuildProject Include="@(ProjectReference)" Condition="'%(Filename)' == 'EggIncTools.Web.CssBuild'" />
-    </ItemGroup>
-    <MSBuild Projects="@(_CssBuildProject)" Targets="GetTargetPath" Properties="Configuration=$(Configuration)">
-      <Output TaskParameter="TargetOutputs" PropertyName="_CssBuildDll" />
-    </MSBuild>
-    <PropertyGroup>
-      <_CssBuildDotnet>$(DOTNET_HOST_PATH)</_CssBuildDotnet>
-      <_CssBuildDotnet Condition="'$(_CssBuildDotnet)' == ''">dotnet</_CssBuildDotnet>
-    </PropertyGroup>
-  </Target>
-
-  <Target Name="BuildCss"
-          AfterTargets="ResolveProjectReferences"
-          DependsOnTargets="ResolveCssBuildPath"
-          Condition="'$(BuildHubCss)' != 'false' And '$(DesignTimeBuild)' != 'true'"
-          Inputs="@(_StylesInput);$(_CssBuildDll)"
-          Outputs="$(MSBuildProjectDirectory)\wwwroot\styles.css">
-    <Exec Command="&quot;$(_CssBuildDotnet)&quot; &quot;$(_CssBuildDll)&quot; &quot;$(MSBuildProjectDirectory)&quot;" />
-  </Target>
 
 </Project>

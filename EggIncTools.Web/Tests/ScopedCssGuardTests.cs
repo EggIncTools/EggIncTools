@@ -46,7 +46,7 @@ public partial class ScopedCssGuardTests {
 
     [Fact]
     public void EveryMarkupClassResolves() {
-        var globalSheet = Path.Combine(RepoRoot, "EggIncTools.Web", "Styles", "app.css");
+        var globalSheet = Path.Combine(RepoRoot, "EggIncTools.Web", "wwwroot", "app.css");
         var defined = Enumerate("*.razor.css").Append(globalSheet)
             .SelectMany(css => ClassToken().Matches(File.ReadAllText(css)).Select(m => m.Groups[1].Value))
             .Concat(SharedClasses)

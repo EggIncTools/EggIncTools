@@ -5,7 +5,6 @@ publish/
 dist/
 .vscode/
 *.trx
-EggIncTools.Web/wwwroot/styles.css
 __pycache__/
 *.pyc
 tools
