@@ -82,7 +82,7 @@
     private string CellStyle(Cell cell) {
         var key = Seed + cell.Index;
         var flip = FlipMinMs + Hash(key, 307) % FlipRangeMs;
-        var style = $"--cell: {cell.Index}; --flip: {flip}ms; --flip-lag: -{Hash(key, 409) % flip}ms";
+        var style = $"--flip: {flip}ms; --flip-lag: -{Hash(key, 409) % flip}ms";
         if (cell.Slot < 0) return style;
 
         var shrink = ShrinkMinMs + Hash(key, 523) % ShrinkRangeMs;

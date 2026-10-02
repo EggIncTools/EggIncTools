@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using EggIdentity.Styles;
+using EggIdentity.Styles.Css;
 using Xunit;
 
 namespace EggIncTools.Web.Tests;
@@ -9,14 +10,64 @@ public partial class ScopedCssGuardTests {
 
     private static readonly string[] MarkupProjects = ["EggIncTools.Web", "EggIncTools.Shell"];
 
-    private static readonly HashSet<string> SharedClasses = [
-        .. ComponentClasses.All.Keys.SelectMany(selector => ClassToken().Matches(selector).Select(m => m.Groups[1].Value)),
+    private static readonly CssSheet AppSheet = CssSheet.Load(Path.Combine(RepoRoot, "EggIncTools.Web", "wwwroot", "app.css"));
+
+    private static readonly CssSheet SharedSheet = CssSheet.Load(Path.Combine(AppContext.BaseDirectory, "shared", "shared.css"));
+
+    private static readonly CssSheet PreflightSheet = CssSheet.Load(Path.Combine(AppContext.BaseDirectory, "shared", "preflight.css"));
+
+    private static readonly HashSet<string> SharedClasses = [.. ClassesOf(SharedSheet)];
+
+    private static readonly HashSet<string> InlineProperties = [
+        .. Enumerate("*.razor").SelectMany(razor => StyleAttribute().Matches(File.ReadAllText(razor))
+            .SelectMany(attr => InlineProperty().Matches(attr.Groups[1].Value).Select(m => m.Groups[1].Value))),
     ];
 
     public static TheoryData<string> ScopedFiles() {
         var data = new TheoryData<string>();
         foreach (var file in Enumerate("*.razor.css")) data.Add(Path.GetRelativePath(RepoRoot, file));
         return data;
+    }
+
+    [Fact]
+    public void AppSheetDeclaresEveryContractToken() {
+        var root = AppSheet.Rule(":root");
+        Assert.NotNull(root);
+        Assert.All(ComponentTokens.Required.Concat(ComponentTokens.Optional), token => Assert.True(root.Declares(token), token));
+    }
+
+    [Fact]
+    public void AppSheetDeclaresEveryTokenTheSharedLayerReads() {
+        var root = AppSheet.Rule(":root");
+        Assert.NotNull(root);
+        var reads = SharedSheet.ReadProperties.Where(p => p.StartsWith("--color-", StringComparison.Ordinal));
+        Assert.All(reads, token => Assert.True(root.Declares(token), token));
+    }
+
+    [Fact]
+    public void AppSheetMatchesRuntimeBrandTokens() {
+        var root = AppSheet.Rule(":root");
+        Assert.NotNull(root);
+        Assert.All(BrandTokens.All, pair => Assert.Equal(pair.Value, root[pair.Key]));
+    }
+
+    [Fact]
+    public void AppSheetDefinesNoClassTheSharedLayerOwns() {
+        var redefined = ClassesOf(AppSheet).Where(SharedClasses.Contains).ToList();
+        Assert.Empty(redefined);
+    }
+
+    [Fact]
+    public void AppSheetHasNoEngineSyntax() {
+        Assert.DoesNotContain(AppSheet.Statements, s => s.StartsWith('@'));
+        Assert.DoesNotContain(AppSheet.Containers, c => !c.StartsWith("@media", StringComparison.Ordinal));
+        Assert.DoesNotContain(AppSheet.Selectors, s => s.StartsWith('@'));
+    }
+
+    [Fact]
+    public void SharedLayerDefinesNoPalette() {
+        Assert.DoesNotContain(SharedSheet.DefinedProperties, p => p.StartsWith("--color-", StringComparison.Ordinal));
+        Assert.DoesNotContain(PreflightSheet.DefinedProperties, p => p.StartsWith("--color-", StringComparison.Ordinal));
     }
 
     [Theory]
@@ -28,7 +79,7 @@ public partial class ScopedCssGuardTests {
     [Theory]
     [MemberData(nameof(ScopedFiles))]
     public void EveryDeepIsAnchored(string relative) {
-        foreach (var selector in Selectors(Read(relative))) {
+        foreach (var selector in SelectorsOf(Load(relative))) {
             var at = selector.IndexOf("::deep", StringComparison.Ordinal);
             if (at < 0) continue;
             Assert.True(ClassToken().IsMatch(selector[..at]), $"{relative}: unanchored ::deep in '{selector}'");
@@ -38,17 +89,30 @@ public partial class ScopedCssGuardTests {
     [Theory]
     [MemberData(nameof(ScopedFiles))]
     public void ScopedFileNeverRedefinesSharedClass(string relative) {
-        foreach (var selector in Selectors(Read(relative))) {
+        foreach (var selector in SelectorsOf(Load(relative))) {
             var shared = ClassToken().Matches(selector).Select(m => m.Groups[1].Value).FirstOrDefault(SharedClasses.Contains);
             Assert.True(shared is null, $"{relative}: redefines shared class .{shared} in '{selector}'");
         }
     }
 
+    [Theory]
+    [MemberData(nameof(ScopedFiles))]
+    public void ScopedFileReadsOnlyDeclaredTokens(string relative) {
+        var sheet = Load(relative);
+        var root = AppSheet.Rule(":root");
+        Assert.NotNull(root);
+        var declared = root.Declarations.Select(d => d.Property)
+            .Concat(sheet.DefinedProperties)
+            .Concat(InlineProperties)
+            .ToHashSet(StringComparer.Ordinal);
+        var undeclared = sheet.ReadProperties.Where(p => !declared.Contains(p)).ToList();
+        Assert.True(undeclared.Count == 0, $"{relative}: reads undeclared {string.Join(", ", undeclared)}");
+    }
+
     [Fact]
     public void EveryMarkupClassResolves() {
-        var globalSheet = Path.Combine(RepoRoot, "EggIncTools.Web", "wwwroot", "app.css");
-        var defined = Enumerate("*.razor.css").Append(globalSheet)
-            .SelectMany(css => ClassToken().Matches(File.ReadAllText(css)).Select(m => m.Groups[1].Value))
+        var defined = Enumerate("*.razor.css").Select(CssSheet.Load).Append(AppSheet)
+            .SelectMany(ClassesOf)
             .Concat(SharedClasses)
             .ToHashSet(StringComparer.Ordinal);
 
@@ -69,14 +133,18 @@ public partial class ScopedCssGuardTests {
 
     private static string Read(string relative) => File.ReadAllText(Path.Combine(RepoRoot, relative));
 
-    private static IEnumerable<string> Selectors(string css) =>
-        SelectorBlock().Matches(CommentBlock().Replace(css, "")).Select(m => m.Groups[1].Value.Trim())
-            .Where(s => !s.StartsWith('@') && !KeyframeStep().IsMatch(s))
+    private static CssSheet Load(string relative) => CssSheet.Load(Path.Combine(RepoRoot, relative));
+
+    private static IEnumerable<string> SelectorsOf(CssSheet sheet) =>
+        sheet.Selectors.Where(s => !s.StartsWith('@'))
             .SelectMany(s => s.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+
+    private static IEnumerable<string> ClassesOf(CssSheet sheet) =>
+        SelectorsOf(sheet).SelectMany(s => ClassToken().Matches(s).Select(m => m.Groups[1].Value));
 
     private static IEnumerable<string> Enumerate(string pattern) =>
         MarkupProjects.SelectMany(project => Directory.EnumerateFiles(Path.Combine(RepoRoot, project), pattern, SearchOption.AllDirectories))
-            .Where(path => !path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Any(s => s is "bin" or "obj" or "Tests"))
+            .Where(path => !path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Any(s => s is "bin" or "obj" or "dist" or "Tests"))
             .OrderBy(path => path, StringComparer.Ordinal);
 
     private static string FindRepoRoot() {
@@ -88,20 +156,17 @@ public partial class ScopedCssGuardTests {
     [GeneratedRegex(@"\.([a-zA-Z][a-zA-Z0-9-]*)")]
     private static partial Regex ClassToken();
 
-    [GeneratedRegex(@"([^{}]+)\{")]
-    private static partial Regex SelectorBlock();
-
-    [GeneratedRegex(@"/\*.*?\*/", RegexOptions.Singleline)]
-    private static partial Regex CommentBlock();
-
-    [GeneratedRegex(@"^(from|to|[\d.]+%)(\s*,\s*(from|to|[\d.]+%))*$")]
-    private static partial Regex KeyframeStep();
-
     [GeneratedRegex("""(?<![\w-])class="((?:@\((?:[^()]|\([^()]*\))*\)|[^"])*)"(?=[\s/>])""")]
     private static partial Regex ClassAttribute();
 
     [GeneratedRegex("\"([a-z][a-z0-9 -]*)\"")]
     private static partial Regex StringLiteral();
+
+    [GeneratedRegex(@"(?<![\w-])style=""([^""]*)""")]
+    private static partial Regex StyleAttribute();
+
+    [GeneratedRegex(@"(--[a-z][a-z0-9-]*)\s*:")]
+    private static partial Regex InlineProperty();
 
     [GeneratedRegex(@"@\((?:[^()]|\([^()]*\))*\)|@[\w.]+(?:\([^)]*\))?")]
     private static partial Regex ExpressionOrLiteral();

@@ -10,11 +10,15 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="EggIdentity.Styles" />
+    <PackageReference Include="EggIdentity.Styles" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EggIncTools.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(PkgEggIdentity_Styles)\staticwebassets\*.css" Link="shared\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
