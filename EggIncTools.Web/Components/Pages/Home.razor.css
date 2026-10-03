@@ -41,7 +41,7 @@
         transparent 72%
     );
     z-index: -1;
-    transition: opacity 160ms ease;
+    transition: opacity var(--motion-base) var(--ease-standard);
 }
 
 .quad-ledger { align-items: start; }

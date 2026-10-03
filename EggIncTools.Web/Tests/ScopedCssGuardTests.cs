@@ -110,6 +110,15 @@ public partial class ScopedCssGuardTests {
     }
 
     [Fact]
+    public void AppMotionPassesTheMotionGuard() {
+        var violations = Enumerate("*.razor.css").Select(CssSheet.Load).Prepend(AppSheet)
+            .SelectMany(sheet => MotionGuard.Check(sheet, ["egg-drift", "quad-shrink", "quad-flip"]))
+            .Select(v => $"{v.Selector} {v.Property}: {v.Value} ({v.Reason})")
+            .ToList();
+        Assert.Empty(violations);
+    }
+
+    [Fact]
     public void EveryMarkupClassResolves() {
         var defined = Enumerate("*.razor.css").Select(CssSheet.Load).Append(AppSheet)
             .SelectMany(ClassesOf)

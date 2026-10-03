@@ -26,7 +26,7 @@
 
 .quad-cell-opt {
     overflow: hidden;
-    animation: quad-shrink var(--shrink) steps(1, end) infinite;
+    animation: quad-shrink var(--shrink) var(--ease-step) infinite;
     animation-delay: var(--shrink-lag);
 }
 
@@ -42,7 +42,7 @@
 .quad-face {
     grid-area: 1 / 1;
     opacity: 0;
-    animation: quad-flip var(--flip) steps(1, end) infinite;
+    animation: quad-flip var(--flip) var(--ease-step) infinite;
     animation-delay: calc(var(--flip-lag) - var(--face) * var(--flip) / 6);
 }
 

@@ -15,6 +15,14 @@
   --color-github: #a371f7;
   --color-on-accent2: #ffffff;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --motion-fast: 120ms;
+  --motion-base: 150ms;
+  --motion-morph: 220ms;
+  --motion-pulse: 2s;
+  --ease-standard: cubic-bezier(.2,0,0,1);
+  --ease-pulse: cubic-bezier(.4,0,.6,1);
+  --ease-step: steps(1, end);
+  --ease-drift: ease-out;
 }
 
 *,

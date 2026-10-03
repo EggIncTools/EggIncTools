@@ -5,6 +5,7 @@
 @using EggIdentity.Suite.AdminUi
 @inject IServiceProvider Services
 @inject NavigationManager Nav
+@inject ICurrentUser Viewer
 
 <PageTitle>Admin - EggInc.tools</PageTitle>
 
@@ -38,8 +39,6 @@
         new("compare", "Compare settings", @<ComparePane/>),
     ];
 
-    [CascadingParameter] private Task<AuthenticationState>? AuthStateTask { get; set; }
-
     private bool _isAdmin;
     private bool _checked;
     private bool _wasRejected;
@@ -53,15 +52,13 @@
     protected override async Task OnInitializedAsync() {
         _wasRejected = Nav.Uri.Contains("rejected=1", StringComparison.Ordinal);
 
-        if (AuthStateTask is not null) {
-            var state = await AuthStateTask;
-            _isAdmin = state.User.IsAtLeast(UserRole.Admin);
-            _userId = state.User.FindFirst("sub")?.Value;
+        var user = await Viewer.GetAsync();
+        _isAdmin = user.IsAtLeast(UserRole.Admin);
+        _userId = user.Id?.ToString();
 
-            if (!_isAdmin && !_wasRejected && state.User.Identity is { IsAuthenticated: true }) {
-                Nav.NavigateTo("/admin/reject", forceLoad: true);
-                return;
-            }
+        if (!_isAdmin && !_wasRejected && user.IsAuthenticated) {
+            Nav.NavigateTo("/admin/reject", forceLoad: true);
+            return;
         }
 
         _checked = true;

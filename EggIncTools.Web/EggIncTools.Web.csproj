@@ -15,6 +15,7 @@
     <PackageReference Include="EggIdentity.Deploy" />
     <PackageReference Include="EggIdentity.Deploy.AdminUi" />
     <PackageReference Include="EggIdentity.Fallback" />
+    <PackageReference Include="EggIdentity.Hosting" />
     <PackageReference Include="EggIdentity.Icons" />
     <PackageReference Include="EggIdentity.Resilience" />
     <PackageReference Include="EggIdentity.Settings" />

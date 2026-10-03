@@ -34,7 +34,7 @@
     transform-box: fill-box;
     transform-origin: center;
     animation-name: egg-drift;
-    animation-timing-function: ease-out;
+    animation-timing-function: var(--ease-drift);
     animation-iteration-count: infinite;
 }
 

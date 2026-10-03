@@ -37,7 +37,8 @@ public class ToolStatusServiceTests {
     private static ToolStatusService Build() {
         var services = new ServiceCollection().AddLogging().BuildServiceProvider();
         return new ToolStatusService(
-            Registry(services), services.GetRequiredService<ILogger<ToolStatusService>>(), TimeProvider.System);
+            Registry(services), services.GetRequiredService<IServiceScopeFactory>(),
+            services.GetRequiredService<ILogger<ToolStatusService>>(), TimeProvider.System);
     }
 
     private static ToolRegistry Registry(IServiceProvider services) =>
