@@ -1,5 +1,5 @@
 <ModalHost Open="@(Kind is not null)" Title="@Title" TitleId="legalModalTitle"
-           Width="ModalWidth.Large" OnClose="OnClose">
+           Width="ModalWidth.Large" ReturnFocusTo="@ReturnFocusTo" OnClose="OnClose">
     <div class="modal-body">
         <LegalHeader/>
 
@@ -17,6 +17,8 @@
     [Parameter] public EventCallback<string> OnKindChange { get; set; }
 
     [Parameter] public EventCallback OnClose { get; set; }
+
+    [Parameter] public ElementReference? ReturnFocusTo { get; set; }
 
     private string Title => Kind == "terms" ? "Terms of Service" : "Privacy & Cookies";
 }

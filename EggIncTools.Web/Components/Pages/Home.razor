@@ -83,10 +83,10 @@
 
     <footer class="hub-foot">
         <nav class="hub-foot-links">
-            <a href="/privacy" @onclick="@(() => _legal = "privacy")" @onclick:preventDefault>
+            <a href="/privacy" @ref="_privacyLink" @onclick="@(() => OpenLegal("privacy", _privacyLink))" @onclick:preventDefault>
                 <Icon Name="file-text"/>Privacy
             </a>
-            <a href="/terms" @onclick="@(() => _legal = "terms")" @onclick:preventDefault>
+            <a href="/terms" @ref="_termsLink" @onclick="@(() => OpenLegal("terms", _termsLink))" @onclick:preventDefault>
                 <Icon Name="file-text"/>Terms
             </a>
         </nav>
@@ -97,7 +97,7 @@
     </footer>
 </main>
 
-<LegalModal Kind="@_legal" OnKindChange="@(kind => _legal = kind)" OnClose="@(() => _legal = null)"/>
+<LegalModal Kind="@_legal" OnKindChange="@(kind => _legal = kind)" OnClose="@(() => _legal = null)" ReturnFocusTo="@_legalOpener"/>
 
 @code {
     private static readonly string[] ObfuscatedLines = [
@@ -108,6 +108,9 @@
     [CascadingParameter] public IReadOnlyList<ToolEntry> Tools { get; set; } = ToolCatalog.All;
 
     private string? _legal;
+    private ElementReference _privacyLink;
+    private ElementReference _termsLink;
+    private ElementReference? _legalOpener;
     private ToolStatusService? _status;
 
     protected override void OnInitialized() {
@@ -120,4 +123,9 @@
     }
 
     private void OnStatusChanged() => _ = InvokeAsync(StateHasChanged);
+
+    private void OpenLegal(string kind, ElementReference opener) {
+        _legal = kind;
+        _legalOpener = opener;
+    }
 }
