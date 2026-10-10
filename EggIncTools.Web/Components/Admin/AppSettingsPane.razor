@@ -26,7 +26,7 @@
 
     [Inject] private IServiceProvider Services { get; set; } = default!;
 
-    private string Key => Status?.App ?? "none";
+    private string? Key => Status?.App;
 
     private string Failure(Exception exc) =>
         exc is HttpRequestException http

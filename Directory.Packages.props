@@ -1,12 +1,13 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <EggIdentityVersion>3.5.5</EggIdentityVersion>
+    <EggIdentityVersion>3.6.0</EggIdentityVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="EggIdentity.Auth" Version="$(EggIdentityVersion)" />
+    <PackageVersion Include="EggIdentity.Bot" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Brand" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.Client" Version="$(EggIdentityVersion)" />
     <PackageVersion Include="EggIdentity.CodeStyle" Version="$(EggIdentityVersion)" />

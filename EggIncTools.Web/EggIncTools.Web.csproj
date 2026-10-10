@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Npgsql" />
     <PackageReference Include="EggIdentity.Auth" />
+    <PackageReference Include="EggIdentity.Bot" />
     <PackageReference Include="EggIdentity.Client" />
     <PackageReference Include="EggIdentity.Contract" />
     <PackageReference Include="EggIdentity.Deploy" />
@@ -29,6 +30,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EggIncTools.Shell\EggIncTools.Shell.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Bot\Migrations\*.up.sql" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

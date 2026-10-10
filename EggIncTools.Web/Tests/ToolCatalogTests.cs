@@ -70,7 +70,7 @@ public class ToolCatalogTests {
         Assert.All(ToolCatalog.Providers, provider => {
             var url = ToolCatalog.ProviderSignInUrl(provider, "https://egginc.tools/?a=b");
             Assert.StartsWith($"{ToolCatalog.IdentityOrigin}/auth/go/{provider}?returnUrl=", url, StringComparison.Ordinal);
-            Assert.EndsWith("&mode=redirect", url, StringComparison.Ordinal);
+            Assert.DoesNotContain("mode=", url, StringComparison.Ordinal);
             Assert.DoesNotContain("?a=b", url, StringComparison.Ordinal);
         });
     }

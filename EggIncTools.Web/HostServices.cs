@@ -10,6 +10,7 @@ using EggIdentity.Settings.AdminUi;
 using EggIdentity.Settings.Api;
 using EggIdentity.Settings.Store;
 using EggIdentity.Suite.AdminUi;
+using EggIncTools.Web.Bot;
 using EggIncTools.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -44,8 +45,10 @@ internal static class HostServices {
             ? RegisterSettings(builder, config.ConnString)
             : new HostRuntime(null, null, null);
 
+        RegisterIdentityApi(builder, config);
         RegisterAuth(builder, config);
         RegisterStatus(builder, config);
+        builder.Services.AddHubBot(config);
 
         return runtime;
     }
@@ -72,6 +75,14 @@ internal static class HostServices {
         return new HostRuntime(dataSource, store, cache);
     }
 
+    private static void RegisterIdentityApi(WebApplicationBuilder builder, HostConfig config) {
+        if (!config.IdentityApiEnabled) return;
+        builder.Services.AddHttpClient<IdentityApiClient>(c => {
+            c.BaseAddress = new Uri(config.IdentityApiUrl);
+            c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", config.IdentityApiSecret);
+        });
+    }
+
     private static void RegisterAuth(WebApplicationBuilder builder, HostConfig config) {
         if (LocalAdminGate.IsOn(builder.Environment.EnvironmentName)) {
             builder.Services.AddSingleton(LocalAdminGate.Settings());
@@ -85,10 +96,6 @@ internal static class HostServices {
                     + "by asking the identity API. Set both, or unset the session secret to run anonymous.");
             }
 
-            builder.Services.AddHttpClient<IdentityApiClient>(c => {
-                c.BaseAddress = new Uri(config.IdentityApiUrl);
-                c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", config.IdentityApiSecret);
-            });
             builder.Services.AddAuthentication(EggIdentitySessionDefaults.Scheme).AddEggIdentitySession(session);
         }
 

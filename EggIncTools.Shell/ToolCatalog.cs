@@ -109,7 +109,7 @@ public static class ToolCatalog {
         };
 
     public static string ProviderSignInUrl(string provider, string returnUrl) =>
-        $"{IdentityOrigin}/auth/go/{provider}?returnUrl={Uri.EscapeDataString(SafeReturn(returnUrl))}&mode=redirect";
+        $"{IdentityOrigin}/auth/go/{provider}?returnUrl={Uri.EscapeDataString(SafeReturn(returnUrl))}";
 
     public static string SignOutUrlFor(string returnUrl) =>
         $"{SignOutUrl}?returnUrl={Uri.EscapeDataString(SafeReturn(returnUrl))}";

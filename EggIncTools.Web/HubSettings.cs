@@ -9,6 +9,7 @@ public static class HubSettings {
     public const string HubOnlyEnv = "EGGINCTOOLS_HUB_ONLY";
     public const string ApiUrlEnv = "IDENTITY_API_URL";
     public const string ApiSecretEnv = "IDENTITY_API_SECRET";
+    public const string BotDbEnv = "EGGINCTOOLS_BOT_DB_CONNECTION";
     public const string AdminPolicy = "EggIncToolsAdmin";
     public const ushort DefaultPort = 8090;
 
@@ -18,6 +19,7 @@ public static class HubSettings {
 
     private const string Core = "Core";
     private const string Build = "Build";
+    private const string Discord = "Discord";
 
     public static ISettingsProvider Provider { get; } = new StaticSettingsProvider([
         new SettingDescriptor(
@@ -57,6 +59,11 @@ public static class HubSettings {
             SettingKind.Url, ApplyTier.Bootstrap, Sensitivity.Plain) {
             Description = "Origin the sign-in and sign-out links point at. Falls back to the current identity host.",
             Default = ToolCatalog.DefaultIdentityOrigin,
+        },
+        new SettingDescriptor(
+            "bot.db_connection", BotDbEnv, "Bot Postgres connection string", Discord,
+            SettingKind.Secret, ApplyTier.Bootstrap, Sensitivity.Secret) {
+            Description = "Database the hub's Discord bot keeps its channel config, dashboard and deploy state in. Must not be the identity database. Without it the bot does not run.",
         },
     ]);
 }
