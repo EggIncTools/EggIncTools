@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="EggIdentity.Brand" />
-    <PackageReference Include="EggIdentity.Contract" />
+    <PackageReference Include="EggIdentity.Core" />
     <PackageReference Include="EggIdentity.UI" />
   </ItemGroup>
 

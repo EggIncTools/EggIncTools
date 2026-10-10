@@ -10,7 +10,7 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="EggIdentity.Styles" GeneratePathProperty="true" />
+    <PackageReference Include="EggIdentity.UI" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="$(PkgEggIdentity_Styles)\staticwebassets\*.css" Link="shared\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(PkgEggIdentity_UI)\staticwebassets\*.css" Link="shared\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

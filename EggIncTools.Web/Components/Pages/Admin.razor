@@ -2,6 +2,7 @@
 @implements IDisposable
 @using EggIdentity.Auth
 @using EggIdentity.Contract
+@using EggIncTools.Web.Bot
 @using EggIdentity.Suite.AdminUi
 @inject IServiceProvider Services
 @inject NavigationManager Nav
@@ -27,7 +28,8 @@
                 <Icon Name="refresh" Class="icon-sm"/>
             </button>
         </header>
-        <SuitePanel @key="_generation" LocalApp="@LocalApp" IdentityHostApp="@IdentityHostApp" UpdatedBy="@_userId" Extras="@Extras"/>
+        <SuitePanel @key="_generation" LocalApp="@LocalApp" IdentityHostApp="@IdentityHostApp" UpdatedBy="@_userId" Extras="@Extras"
+                    LocalBot="@LocalBot"/>
     </main>
 }
 
@@ -38,6 +40,8 @@
     private static readonly IReadOnlyList<SuiteExtraView> Extras = [
         new("compare", "Compare settings", @<ComparePane/>),
     ];
+
+    private EggIdentity.Bot.IBotConfigAdmin? LocalBot => Services.GetService<HubBot>()?.Bot?.ConfigService;
 
     private bool _isAdmin;
     private bool _checked;
