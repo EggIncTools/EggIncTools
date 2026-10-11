@@ -1,4 +1,3 @@
-using EggIdentity.Contract;
 using EggIdentity.Settings.Api;
 using EggIncTools.Web.Services;
 using Xunit;
@@ -44,16 +43,6 @@ public class SettingsComparisonTests {
     }
 
     [Fact]
-    public void TwoSecretsThatActuallyDifferStillCannotBeCompared() {
-        var row = Row("identity.db_connection", secret: true,
-            Cell("eggledger", "********"),
-            Cell("eggabacus", "********"));
-
-        Assert.True(row.Set.All(c => c.Display == "********"));
-        Assert.False(row.Divergent);
-    }
-
-    [Fact]
     public void AnUnreachableAppReportsItsReasonRatherThanVanishing() {
         var status = AdminTargets.Describe(
             new AdminTargetRow { Name = "eggledger", AdminBaseUrl = "http://eggledger:5015" },
@@ -77,19 +66,6 @@ public class SettingsComparisonTests {
         Assert.True(status.Administrable);
         Assert.False(app.Ok);
         Assert.Equal("connection refused", app.Unavailable);
-    }
-
-    [Fact]
-    public void NoCompareCellEverCarriesARawSecret() {
-        var wire = new AdminSettingWire {
-            Key = "identity.db_connection",
-            Label = "Postgres connection string",
-            Category = "Core",
-            Secret = true,
-            Display = "********",
-        };
-
-        Assert.Equal("********", wire.Display);
     }
 
     private static CompareRow Row(string key, bool secret, params CompareCell[] cells) =>

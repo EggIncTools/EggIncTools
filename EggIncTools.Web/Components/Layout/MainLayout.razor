@@ -18,8 +18,6 @@
     private bool HubOnly => Services.GetRequiredService<HostConfig>().HubOnly;
 
     protected override async Task OnInitializedAsync() {
-        if (Services.GetService<ToolRegistry>() is { } registry) {
-            _tools = await registry.ToolsAsync();
-        }
+        if (Services.GetService<ToolRegistry>() is { } registry) _tools = await registry.ToolsAsync();
     }
 }

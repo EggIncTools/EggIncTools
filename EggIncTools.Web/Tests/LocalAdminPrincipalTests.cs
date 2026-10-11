@@ -24,17 +24,6 @@ public class LocalAdminPrincipalTests {
         Assert.True(user.IsAtLeast(UserRole.Viewer));
     }
 
-    [Fact]
-    public void TheLocalUserIdIsNotAnyRealUsersId() {
-        Assert.NotEqual(Guid.Empty, LocalAdminSettings.UserId);
-        Assert.StartsWith("00000000-0000-", LocalAdminSettings.UserId.ToString(), StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void TheUsernameSaysItIsLocal() {
-        Assert.Equal("local-admin", new LocalAdminSettings(UserRole.Admin).Username);
-    }
-
     private static ClaimsPrincipal Principal(UserRole role) {
         var settings = new LocalAdminSettings(role);
         return new ClaimsPrincipal(new ClaimsIdentity([

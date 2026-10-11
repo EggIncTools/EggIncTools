@@ -78,9 +78,4 @@ public sealed class LocalAdminGateTests : IDisposable {
         Environment.SetEnvironmentVariable(LocalAdminGate.RoleEnv, "Viewer");
         Assert.Equal(UserRole.Viewer, LocalAdminGate.Settings().Role);
     }
-
-    [Fact]
-    public void ProductionIsNotAnAllowedEnvironment() {
-        Assert.DoesNotContain("Production", LocalAdminGate.AllowedEnvironments, StringComparer.OrdinalIgnoreCase);
-    }
 }

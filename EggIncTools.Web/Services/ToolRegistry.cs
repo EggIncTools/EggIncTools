@@ -12,9 +12,7 @@ public sealed class ToolRegistry(SettingsCache cache, ILogger<ToolRegistry> log)
         if (registered.Count == 0) return ToolCards.Default;
 
         var bySlug = new Dictionary<string, SuiteApp>(StringComparer.OrdinalIgnoreCase);
-        foreach (var app in registered) {
-            if (ResolveSlug(app) is { } slug) bySlug[slug] = app;
-        }
+        foreach (var app in registered) if (ResolveSlug(app) is { } slug) bySlug[slug] = app;
 
         return [.. ToolCards.Default
             .Select(card => bySlug.TryGetValue(card.Slug, out var app) ? Merge(card, app) : card)];

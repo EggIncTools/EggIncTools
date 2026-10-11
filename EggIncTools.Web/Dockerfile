@@ -4,7 +4,6 @@ WORKDIR /src
 ENV NUGET_PACKAGES=/root/.nuget/packages
 
 COPY nuget.config global.json Directory.Build.props Directory.Build.targets Directory.Packages.props .editorconfig ./
-COPY EggIncTools.Shell/EggIncTools.Shell.csproj EggIncTools.Shell/
 COPY EggIncTools.Web/EggIncTools.Web.csproj EggIncTools.Web/
 ARG GITHUB_PACKAGES_USER
 RUN --mount=type=secret,id=github_token \
@@ -15,7 +14,6 @@ RUN --mount=type=secret,id=github_token \
       --configfile nuget.config \
     && dotnet restore EggIncTools.Web/EggIncTools.Web.csproj
 
-COPY EggIncTools.Shell/ EggIncTools.Shell/
 COPY EggIncTools.Web/ EggIncTools.Web/
 
 ARG GIT_SHA
