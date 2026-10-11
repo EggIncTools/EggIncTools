@@ -7,9 +7,11 @@
     }
 </SuiteSwitcher>
 
-<CascadingValue Value="@_tools">
-    @Body
-</CascadingValue>
+<CircuitGuard Name="Page">
+    <CascadingValue Value="@_tools">
+        @Body
+    </CascadingValue>
+</CircuitGuard>
 
 <ToastHost/>
 

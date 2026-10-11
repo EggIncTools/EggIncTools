@@ -6,14 +6,14 @@
     @if (_admin is null) {
         <p class="wb-note">@(Status?.Unavailable ?? "This app cannot be administered from here.")</p>
     } else {
-        <ErrorBoundary @key="Key">
+        <CircuitGuard @key="Key" Name="@Key">
             <ChildContent>
                 <SettingsPanel @key="Key" Admin="@_admin" UpdatedBy="@UpdatedBy"/>
             </ChildContent>
             <ErrorContent>
                 <p class="wb-note">@Failure(context)</p>
             </ErrorContent>
-        </ErrorBoundary>
+        </CircuitGuard>
     }
 </div>
 
