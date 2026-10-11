@@ -17,7 +17,7 @@
         <p class="wb-note">
             @(_wasRejected ? "That account is not an administrator, so it has been signed out." : "Admin access required.")
         </p>
-        <nav class="adm-signin" aria-label="Sign in">
+        <nav class="adm-signin" aria-label="Login">
             @foreach (var provider in SuiteCatalog.Providers) {
                 <a class="btn-mini" href="@SuiteCatalog.ProviderSignInUrl(provider, AdminUrl)">
                     <Icon Name="@SuiteCatalog.ProviderIcon(provider)"/>
