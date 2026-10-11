@@ -1,6 +1,5 @@
 using EggIdentity.Settings;
 using EggIdentity.Settings.Store;
-using EggIncTools.Shell;
 using EggIncTools.Web.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,8 +17,8 @@ public class ToolStatusServiceTests {
 
         await service.PollOnceAsync(CancellationToken.None);
 
-        Assert.All(ToolCatalog.All.Where(t => t.Live), tool => Assert.NotNull(service.For(tool.Slug)));
-        Assert.All(ToolCatalog.All.Where(t => !t.Live), tool => Assert.Null(service.For(tool.Slug)));
+        Assert.All(ToolCards.Default.Where(c => c.Tool.Live), card => Assert.NotNull(service.For(card.Slug)));
+        Assert.All(ToolCards.Default.Where(c => !c.Tool.Live), card => Assert.Null(service.For(card.Slug)));
         Assert.All(service.Snapshot.Values, health => Assert.Null(health.RunningVersion));
     }
 

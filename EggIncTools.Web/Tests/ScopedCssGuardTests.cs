@@ -8,7 +8,7 @@ namespace EggIncTools.Web.Tests;
 public partial class ScopedCssGuardTests {
     private static readonly string RepoRoot = FindRepoRoot();
 
-    private static readonly string[] MarkupProjects = ["EggIncTools.Web", "EggIncTools.Shell"];
+    private static readonly string[] MarkupProjects = ["EggIncTools.Web"];
 
     private static readonly CssSheet AppSheet = CssSheet.Load(Path.Combine(RepoRoot, "EggIncTools.Web", "wwwroot", "app.css"));
 

@@ -4,7 +4,8 @@
 
 <main class="hub">
     <div class="hub-quads">
-        @foreach (var tool in Tools) {
+        @foreach (var card in Tools) {
+            var tool = card.Tool;
             var health = _status?.For(tool.Slug);
             <section class="quad quad-@tool.Slug @(tool.Live ? "" : "quad-soon")" style="--tool: @tool.Accent">
                 <div class="quad-inner">
@@ -15,7 +16,7 @@
                     }
                     <div class="quad-body">
                         <div class="quad-head">
-                            <img class="quad-mark" src="@tool.IconUrl" alt="" width="512" height="512" style="@tool.MarkStyle"/>
+                            <img class="quad-mark" src="@tool.IconUrl(512)" alt="" width="512" height="512" style="@tool.MarkStyle"/>
                             @if (tool.Live) {
                                 <a class="quad-name" href="@tool.Url">
                                     <span class="quad-name-text">@tool.Name</span>
@@ -33,7 +34,7 @@
 
                         @if (tool.Live) {
                             <ul class="quad-points">
-                                @foreach (var point in tool.Points) {
+                                @foreach (var point in card.Points) {
                                     <li>@point</li>
                                 }
                             </ul>
@@ -54,21 +55,21 @@
 
             <p class="hub-by">
                 <span>Proudly presented by</span>
-                <a class="hub-chip" href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">
-                    <img class="hub-chip-mark" src="@ToolCatalog.HubIconUrl(512)" alt="" width="512" height="512"/>
+                <a class="hub-chip" href="@HubLinks.GitHubUrl" target="_blank" rel="noopener">
+                    <img class="hub-chip-mark" src="@Brands.IconPath("tools", 512)" alt="" width="512" height="512"/>
                     <span>EggIncTools</span>
                 </a>
                 <span>&amp;</span>
-                <a class="hub-chip hub-chip-author" href="@ToolCatalog.AuthorUrl" target="_blank" rel="noopener">
+                <a class="hub-chip hub-chip-author" href="@HubLinks.AuthorUrl" target="_blank" rel="noopener">
                     <Icon Name="brand-github"/>
-                    <span>@ToolCatalog.AuthorName</span>
+                    <span>@HubLinks.AuthorName</span>
                 </a>
             </p>
 
-            <a class="hub-invite" href="@ToolCatalog.DiscordUrl" target="_blank" rel="noopener">
-                <img class="hub-invite-mark" src="@ToolCatalog.DiscordIconUrl" alt="" width="64" height="64" loading="lazy"/>
+            <a class="hub-invite" href="@HubLinks.DiscordUrl" target="_blank" rel="noopener">
+                <img class="hub-invite-mark" src="@HubLinks.DiscordIconUrl" alt="" width="64" height="64" loading="lazy"/>
                 <span class="hub-invite-body">
-                    <span class="hub-invite-sub">@ToolCatalog.DiscordName</span>
+                    <span class="hub-invite-sub">@HubLinks.DiscordName</span>
                     <span class="hub-invite-name">Join the Discord Server</span>
                     <span class="hub-invite-points">
                         <span>General discussion &amp; tool support</span>
@@ -105,7 +106,7 @@
         "xxxxxxx xxxx xxxxxx xxxxx xxx xxxxxxxx",
     ];
 
-    [CascadingParameter] public IReadOnlyList<ToolEntry> Tools { get; set; } = ToolCatalog.All;
+    [CascadingParameter] public IReadOnlyList<ToolCard> Tools { get; set; } = ToolCards.Default;
 
     private string? _legal;
     private ElementReference _privacyLink;

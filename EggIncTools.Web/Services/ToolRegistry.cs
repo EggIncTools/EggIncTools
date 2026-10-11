@@ -1,24 +1,23 @@
 using EggIdentity.Deploy;
 using EggIdentity.Settings;
 using EggIdentity.Settings.Store;
-using EggIncTools.Shell;
 
 namespace EggIncTools.Web.Services;
 
 public sealed class ToolRegistry(SettingsCache cache, ILogger<ToolRegistry> log) {
-    public async Task<IReadOnlyList<ToolEntry>> ToolsAsync(CancellationToken ct = default) =>
+    public async Task<IReadOnlyList<ToolCard>> ToolsAsync(CancellationToken ct = default) =>
         Apply(await RowsAsync(ct));
 
-    public static IReadOnlyList<ToolEntry> Apply(IReadOnlyList<SuiteApp> registered) {
-        if (registered.Count == 0) return ToolCatalog.All;
+    public static IReadOnlyList<ToolCard> Apply(IReadOnlyList<SuiteApp> registered) {
+        if (registered.Count == 0) return ToolCards.Default;
 
-        var bySlug = registered
-            .Select(app => (Slug: ResolveSlug(app), App: app))
-            .Where(pair => pair.Slug is not null)
-            .ToDictionary(pair => pair.Slug!, pair => pair.App, StringComparer.OrdinalIgnoreCase);
+        var bySlug = new Dictionary<string, SuiteApp>(StringComparer.OrdinalIgnoreCase);
+        foreach (var app in registered) {
+            if (ResolveSlug(app) is { } slug) bySlug[slug] = app;
+        }
 
-        return [.. ToolCatalog.All
-            .Select(tool => bySlug.TryGetValue(tool.Slug, out var app) ? Merge(tool, app) : tool)];
+        return [.. ToolCards.Default
+            .Select(card => bySlug.TryGetValue(card.Slug, out var app) ? Merge(card, app) : card)];
     }
 
     public async Task<IReadOnlyList<SuiteApp>> RowsAsync(CancellationToken ct = default) {
@@ -42,18 +41,21 @@ public sealed class ToolRegistry(SettingsCache cache, ILogger<ToolRegistry> log)
     }
 
     private static string? ResolveSlug(SuiteApp app) {
-        if (!string.IsNullOrWhiteSpace(app.BrandSlug)) return ToolCatalog.Find(app.BrandSlug)?.Slug;
+        if (!string.IsNullOrWhiteSpace(app.BrandSlug)) return ToolCards.Find(app.BrandSlug)?.Slug;
 
-        return ToolCatalog.All.FirstOrDefault(t =>
-            string.Equals(t.App, app.Name, StringComparison.OrdinalIgnoreCase))?.Slug;
+        return ToolCards.Default.FirstOrDefault(c =>
+            string.Equals(c.App, app.Name, StringComparison.OrdinalIgnoreCase))?.Slug;
     }
 
-    private static ToolEntry Merge(ToolEntry tool, SuiteApp app) {
+    private static ToolCard Merge(ToolCard card, SuiteApp app) {
         var url = app.PublicUrl?.TrimEnd('/');
-        return tool with {
-            Url = string.IsNullOrWhiteSpace(url) ? tool.Url : url,
-            Live = tool.Live && app.Enabled,
-            App = string.IsNullOrWhiteSpace(app.Name) ? tool.App : app.Name,
+        var entry = card.Tool with {
+            Url = string.IsNullOrWhiteSpace(url) ? card.Tool.Url : url,
+            Live = card.Tool.Live && app.Enabled,
+        };
+        return card with {
+            Tool = entry,
+            App = string.IsNullOrWhiteSpace(app.Name) ? card.App : app.Name,
         };
     }
 }

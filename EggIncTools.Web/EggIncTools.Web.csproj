@@ -19,10 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EggIncTools.Shell\EggIncTools.Shell.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Bot\Migrations\*.up.sql" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 

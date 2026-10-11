@@ -1,21 +1,22 @@
+@inject SuiteContext Suite
 <!DOCTYPE html>
-<html lang="en" translate="no">
+<html lang="en" translate="no" @attributes="Suite.HtmlAttributes">
 <head>
     <meta charset="utf-8"/>
     <meta name="google" content="notranslate"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>EggInc.tools</title>
     <meta name="description" content="@Description"/>
-    <link rel="icon" href="@ToolCatalog.HubFaviconUrl" sizes="any"/>
-    <link rel="icon" href="@ToolCatalog.HubIconUrl(32)" type="image/png"/>
-    <link rel="apple-touch-icon" href="@ToolCatalog.HubIconUrl(180)"/>
+    <link rel="icon" href="@Brands.FaviconPath("tools")" sizes="any"/>
+    <link rel="icon" href="@Brands.IconPath("tools", 32)" type="image/png"/>
+    <link rel="apple-touch-icon" href="@Brands.IconPath("tools", 180)"/>
     <link rel="canonical" href="@Origin"/>
     <meta name="theme-color" content="#0b0d12"/>
     <meta property="og:type" content="website"/>
     <meta property="og:url" content="@Origin"/>
     <meta property="og:title" content="EggInc.tools"/>
     <meta property="og:description" content="@Description"/>
-    <meta property="og:image" content="@($"{Origin}/{ToolCatalog.HubIconUrl(256)}")"/>
+    <meta property="og:image" content="@($"{Origin}/{Brands.IconPath("tools", 256)}")"/>
     <meta property="og:image:type" content="image/png"/>
     <meta property="og:image:width" content="256"/>
     <meta property="og:image:height" content="256"/>
@@ -25,12 +26,20 @@
     <link rel="stylesheet" href="@($"/_content/EggIdentity.UI/reduced-motion.css?v={AssetVersion}")"/>
     <link rel="stylesheet" href="@($"/app.css?v={AssetVersion}")"/>
     <link rel="stylesheet" href="@($"/EggIncTools.Web.styles.css?v={AssetVersion}")"/>
+    <SuiteHandoff/>
     <HeadOutlet @rendermode="@RenderMode"/>
 </head>
 <body>
 <ReconnectModal/>
 <Routes @rendermode="@RenderMode"/>
-<script src="_framework/blazor.web.js"></script>
+<script src="_framework/blazor.web.js" autostart="false"></script>
+<script>
+    if (document.prerendering) {
+        document.addEventListener("prerenderingchange", () => Blazor.start(), { once: true });
+    } else {
+        Blazor.start();
+    }
+</script>
 </body>
 </html>
 
@@ -54,4 +63,6 @@
     [Inject] private NavigationManager Nav { get; set; } = default!;
 
     private string Origin => new Uri(Nav.BaseUri).GetLeftPart(UriPartial.Authority);
+
+    protected override Task OnInitializedAsync() => Suite.LoadAsync();
 }

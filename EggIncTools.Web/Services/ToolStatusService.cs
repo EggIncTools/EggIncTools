@@ -52,8 +52,8 @@ public sealed class ToolStatusService(
         var now = _time.GetUtcNow();
 
         _snapshot = tools
-            .Where(tool => tool.Live)
-            .Select(tool => Describe(tool.Slug, versions.GetValueOrDefault(tool.App), now))
+            .Where(card => card.Tool.Live)
+            .Select(card => Describe(card.Slug, versions.GetValueOrDefault(card.App), now))
             .ToDictionary(h => h.Slug, h => h, StringComparer.OrdinalIgnoreCase);
 
         foreach (var handler in Changed?.GetInvocationList() ?? []) {

@@ -24,3 +24,9 @@
     font-size: 1.125rem;
     font-weight: 600;
 }
+
+.adm-signin {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}

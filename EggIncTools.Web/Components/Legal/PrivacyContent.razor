@@ -21,7 +21,7 @@
     <h2>Signing in</h2>
     <p>
         Sign-in runs through the shared identity service at
-        <a href="@ToolCatalog.DefaultIdentityOrigin" target="_blank" rel="noopener">id.egginc.tools</a>.
+        <a href="@SuiteCatalog.DefaultIdentityOrigin" target="_blank" rel="noopener">id.egginc.tools</a>.
         It sits between you, an OAuth provider you choose (Discord, Google, Microsoft, or GitHub) via a
         self-hosted Authentik instance at auth.egginc.tools, and the tool you are signing into. Your
         password is never seen or stored here; the provider and Authentik handle it entirely.
@@ -109,9 +109,9 @@
         <li>Clear cookies for egginc.tools sites to remove the local session.</li>
         <li>
             Contact the operator through the
-            <a href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">GitHub organization</a>
+            <a href="@HubLinks.GitHubUrl" target="_blank" rel="noopener">GitHub organization</a>
             or the project
-            <a href="@ToolCatalog.DiscordUrl" target="_blank" rel="noopener">Discord server</a>
+            <a href="@HubLinks.DiscordUrl" target="_blank" rel="noopener">Discord server</a>
             to request deletion of your stored account record.
         </li>
     </ul>
@@ -122,7 +122,7 @@
     <p>
         This policy may change as the suite changes. The date at the top is the last revision. The
         hosted instance is run by an individual, David Cole, not a company. Source is at
-        <a href="@ToolCatalog.GitHubUrl" target="_blank" rel="noopener">github.com/EggIncTools</a>.
+        <a href="@HubLinks.GitHubUrl" target="_blank" rel="noopener">github.com/EggIncTools</a>.
         See also the
         @if (OnOpenTerms.HasDelegate) {
             <button type="button" class="legal-link-btn" @onclick="OnOpenTerms">Terms of Service</button>

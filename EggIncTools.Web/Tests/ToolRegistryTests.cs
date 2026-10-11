@@ -1,5 +1,4 @@
 using EggIdentity.Deploy;
-using EggIncTools.Shell;
 using EggIncTools.Web.Services;
 using Xunit;
 
@@ -8,13 +7,13 @@ namespace EggIncTools.Web.Tests;
 public class ToolRegistryTests {
     [Fact]
     public void AppNamesAreTheDeployRowIdsNotTheBrandSlugs() {
-        Assert.Equal("eggledger", ToolCatalog.Find("ledger")!.App);
-        Assert.Equal("eggincognito", ToolCatalog.Find("incognito")!.App);
+        Assert.Equal("eggledger", ToolCards.Find("ledger")!.App);
+        Assert.Equal("eggincognito", ToolCards.Find("incognito")!.App);
     }
 
     [Fact]
     public void NoRowsLeavesTheBuiltInCatalogUntouched() {
-        Assert.Same(ToolCatalog.All, ToolRegistry.Apply([]));
+        Assert.Same(ToolCards.Default, ToolRegistry.Apply([]));
     }
 
     [Fact]
@@ -25,7 +24,7 @@ public class ToolRegistryTests {
             App("mystery", slug: "nope"),
         ]);
 
-        Assert.Equal(ToolCatalog.All.Select(t => t.Url), tools.Select(t => t.Url));
+        Assert.Equal(ToolCards.Default.Select(c => c.Tool.Url), tools.Select(c => c.Tool.Url));
     }
 
     [Fact]
@@ -34,7 +33,7 @@ public class ToolRegistryTests {
             App("eggledger", slug: "ledger", url: "https://eggledger.example.test/"),
         ]);
 
-        Assert.Equal("https://eggledger.example.test", Find(tools, "ledger").Url);
+        Assert.Equal("https://eggledger.example.test", Find(tools, "ledger").Tool.Url);
     }
 
     [Fact]
@@ -43,33 +42,43 @@ public class ToolRegistryTests {
             App("eggledger", url: "https://eggledger.example.test"),
         ]);
 
-        Assert.Equal("https://eggledger.example.test", Find(tools, "ledger").Url);
+        Assert.Equal("https://eggledger.example.test", Find(tools, "ledger").Tool.Url);
     }
 
     [Fact]
     public void AnAbsentPublicUrlKeepsTheCompiledUrl() {
         var tools = ToolRegistry.Apply([App("eggledger", slug: "ledger")]);
 
-        Assert.Equal(ToolCatalog.Find("ledger")!.Url, Find(tools, "ledger").Url);
+        Assert.Equal(ToolCards.Find("ledger")!.Tool.Url, Find(tools, "ledger").Tool.Url);
     }
 
     [Fact]
     public void DisabledToolsRenderAsNotYetLive() {
         var tools = ToolRegistry.Apply([App("eggledger", slug: "ledger", enabled: false)]);
 
-        Assert.False(Find(tools, "ledger").Live);
+        Assert.False(Find(tools, "ledger").Tool.Live);
     }
 
     [Fact]
     public void ListedDoesNotGateTheHubBecauseTheCatalogDoes() {
         var tools = ToolRegistry.Apply([App("eggledger", slug: "ledger", listed: false)]);
 
-        Assert.Contains(tools, t => t.Slug == "ledger");
-        Assert.Equal(ToolCatalog.All.Count, tools.Count);
+        Assert.Contains(tools, c => c.Slug == "ledger");
+        Assert.Equal(ToolCards.Default.Count, tools.Count);
     }
 
-    private static ToolEntry Find(IReadOnlyList<ToolEntry> tools, string slug) =>
-        tools.Single(t => t.Slug == slug);
+    [Fact]
+    public void LiveCardsCarryPoints() {
+        Assert.All(ToolCards.Default.Where(c => c.Tool.Live), card => Assert.NotEmpty(card.Points));
+    }
+
+    [Fact]
+    public void EveryCardSlugHasABrand() {
+        Assert.All(ToolCards.Default, card => Assert.NotNull(EggIdentity.Contract.Brands.Find(card.Slug)));
+    }
+
+    private static ToolCard Find(IReadOnlyList<ToolCard> tools, string slug) =>
+        tools.Single(c => c.Slug == slug);
 
     private static SuiteApp App(
         string name,

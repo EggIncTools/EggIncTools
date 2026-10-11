@@ -10,16 +10,6 @@ permissions:
   actions: write
 
 jobs:
-  pack:
-    uses: EggIncTools/EggIdentity/.github/workflows/nuget-publish.yml@main
-    with:
-      dotnet-version: "11.0.x"
-      packages-auth: true
-      pack-targets: |
-        EggIncTools.Shell/EggIncTools.Shell.csproj
-    secrets:
-      PACKAGES_PAT: ${{ secrets.PACKAGES_PAT }}
-
   docker-web:
     uses: EggIncTools/EggIdentity/.github/workflows/docker-publish.yml@main
     permissions:

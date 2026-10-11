@@ -1,5 +1,5 @@
 using EggIdentity.Settings;
-using EggIncTools.Shell;
+using EggIdentity.UI.Suite;
 
 namespace EggIncTools.Web;
 
@@ -55,10 +55,10 @@ public static class HubSettings {
             Required = true,
         },
         new SettingDescriptor(
-            "identity.widget_url", ToolCatalog.IdentityOriginEnv, "Identity origin", Core,
+            "identity.widget_url", SuiteCatalog.IdentityOriginEnv, "Identity origin", Core,
             SettingKind.Url, ApplyTier.Bootstrap, Sensitivity.Plain) {
             Description = "Origin the sign-in and sign-out links point at. Falls back to the current identity host.",
-            Default = ToolCatalog.DefaultIdentityOrigin,
+            Default = SuiteCatalog.DefaultIdentityOrigin,
         },
         new SettingDescriptor(
             "bot.db_connection", BotDbEnv, "Bot Postgres connection string", Discord,

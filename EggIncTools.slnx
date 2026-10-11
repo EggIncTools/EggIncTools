@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="EggIncTools.Shell/EggIncTools.Shell.csproj" />
   <Project Path="EggIncTools.Web/EggIncTools.Web.csproj" />
   <Project Path="EggIncTools.Web/Tests/EggIncTools.Web.Tests.csproj" />
 </Solution>

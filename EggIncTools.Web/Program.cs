@@ -3,7 +3,7 @@ using EggIdentity.Client;
 using EggIdentity.Fallback;
 using EggIdentity.Settings.Store;
 using EggIdentity.UI;
-using EggIncTools.Shell;
+using EggIdentity.UI.Suite;
 using EggIncTools.Web.Components;
 using EggIncTools.Web.Services;
 using Npgsql;
@@ -43,11 +43,12 @@ public static class Program {
 
     private static void ConfigurePipeline(WebApplication app, HostConfig config) {
         var returns = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("ReturnUrl");
-        ToolCatalog.OnReturnRejected = host =>
-            returns.LogWarning("rejected a returnUrl on {Host}; sending the user to {Hub} instead", host, ToolCatalog.HubUrl);
+        SuiteCatalog.OnReturnRejected = host =>
+            returns.LogWarning("rejected a returnUrl on {Host}; sending the user to {Hub} instead", host, SuiteCatalog.HubUrl);
 
         app.UseForwardedHeaders();
         app.UseEggIdentityFallback();
+        app.UseSuitePrerender();
         app.UseStaticFiles();
 
         if (config.AuthEnabled || LocalAdminGate.IsOn(app.Environment.EnvironmentName)) {
@@ -81,7 +82,7 @@ public static class Program {
             app.MapGet("/auth/redeem", async (
                 string? code, string? returnUrl, HttpContext ctx, IdentityApiClient identity,
                 TimeProvider time, ILoggerFactory loggers, CancellationToken ct) => {
-                    var target = ToolCatalog.IsAllowedReturn(returnUrl) ? returnUrl : "/admin";
+                    var target = SuiteCatalog.IsAllowedReturn(returnUrl) ? returnUrl : "/admin";
                     if (string.IsNullOrEmpty(code)) return Results.Redirect(target);
 
                     try {

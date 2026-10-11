@@ -1,15 +1,19 @@
 @inherits LayoutComponentBase
 @inject IServiceProvider Services
-@inject NavigationManager Nav
 
-<ToolsHeader Active="hub" Tools="@_tools" ReturnUrl="@Nav.Uri" ShowSignIn="@(!HubOnly)"/>
+<div class="hub-bar">
+    <SuiteSwitcher Placement="SuitePlacement.Bar"/>
+    @if (!HubOnly) {
+        <SuiteAccount Placement="SuitePlacement.Bar"/>
+    }
+</div>
 
 <CascadingValue Value="@_tools">
     @Body
 </CascadingValue>
 
 @code {
-    private IReadOnlyList<ToolEntry> _tools = ToolCatalog.All;
+    private IReadOnlyList<ToolCard> _tools = ToolCards.Default;
 
     private bool HubOnly => Services.GetRequiredService<HostConfig>().HubOnly;
 
