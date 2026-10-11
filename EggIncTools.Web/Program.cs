@@ -114,6 +114,7 @@ public static class Program {
             app.MapGet("/health", () => Results.Text("ok"));
         }
         app.MapAppVersion();
+        app.MapEggIdentitySuite();
         app.MapRazorComponents<AppHost>().AddInteractiveServerRenderMode();
     }
 }
