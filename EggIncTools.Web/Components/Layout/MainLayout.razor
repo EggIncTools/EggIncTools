@@ -1,11 +1,13 @@
 @inherits LayoutComponentBase
 @inject IServiceProvider Services
 
-<SuiteSwitcher Placement="SuitePlacement.Bar">
-    @if (!HubOnly) {
-        <SuiteAccount Placement="SuitePlacement.Bar"/>
-    }
-</SuiteSwitcher>
+<div class="hub-chrome">
+    <SuiteSwitcher Placement="SuitePlacement.Bar">
+        @if (!HubOnly) {
+            <SuiteAccount Placement="SuitePlacement.Bar"/>
+        }
+    </SuiteSwitcher>
+</div>
 
 <CircuitGuard Name="Page">
     <CascadingValue Value="@_tools">
