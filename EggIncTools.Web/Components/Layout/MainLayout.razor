@@ -1,12 +1,11 @@
 @inherits LayoutComponentBase
 @inject IServiceProvider Services
 
-<div class="hub-bar">
-    <SuiteSwitcher Placement="SuitePlacement.Bar"/>
+<SuiteSwitcher Placement="SuitePlacement.Bar">
     @if (!HubOnly) {
         <SuiteAccount Placement="SuitePlacement.Bar"/>
     }
-</div>
+</SuiteSwitcher>
 
 <CascadingValue Value="@_tools">
     @Body
