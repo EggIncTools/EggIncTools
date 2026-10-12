@@ -26,7 +26,7 @@
 
     <div class="cmp-tools">
         <input class="form-input cmp-search" type="search" placeholder="Filter by key or label"
-               value="@_query" @oninput="@(e => _query = e.Value?.ToString() ?? "")"/>
+               @bind="_query" @bind:event="oninput"/>
         <label class="cmp-only">
             <input type="checkbox" checked="@_divergentOnly" @onchange="@(e => _divergentOnly = e.Value is true)"/>
             Differs across apps
