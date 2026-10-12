@@ -46,7 +46,7 @@ public static class HubBotSetup {
             RepoUrl = RepoUrl,
             ExtraFields = status?.Snapshot.Values
                 .OrderBy(h => h.Slug, StringComparer.Ordinal)
-                .ToDictionary(h => h.Slug, h => h.RunningVersion is { Length: > 0 } v ? $"{h.Label} ({v})" : h.Label)
+                .ToDictionary(h => h.Slug, h => h.Build is { Length: > 0 } v ? $"{h.Label} ({v})" : h.Label)
                 ?? [],
         };
 

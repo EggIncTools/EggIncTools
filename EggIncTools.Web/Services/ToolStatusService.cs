@@ -12,7 +12,10 @@ public sealed record ToolHealth(
     string Slug,
     string? RunningVersion,
     ToolState State,
-    DateTimeOffset CheckedAt) {
+    DateTimeOffset CheckedAt,
+    string? RunningRevision = null) {
+    public string Build => BuildVersion.Describe(RunningVersion, RunningRevision);
+
     public string Label =>
         State switch {
             ToolState.Up => "Up",
@@ -76,7 +79,7 @@ public sealed class ToolStatusService(
             _ => ToolState.Unknown,
         };
 
-        return new ToolHealth(slug, status.RunningVersion, state, now);
+        return new ToolHealth(slug, status.RunningVersion, state, now, status.RunningRevision);
     }
 
     private async Task<IReadOnlyDictionary<string, DeployStatus>> ReadVersionsAsync(CancellationToken ct) {

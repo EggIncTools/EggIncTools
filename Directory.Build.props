@@ -12,11 +12,9 @@
     <Authors>DavidArthurCole</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <DefaultItemExcludes>$(DefaultItemExcludes);Tests\**</DefaultItemExcludes>
-    <MinVerTagPrefix>v</MinVerTagPrefix>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MinVer" PrivateAssets="All" />
     <PackageReference Include="EggIdentity.CodeStyle" PrivateAssets="all" />
   </ItemGroup>
 </Project>

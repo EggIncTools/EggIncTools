@@ -16,19 +16,18 @@ RUN --mount=type=secret,id=github_token \
 
 COPY EggIncTools.Web/ EggIncTools.Web/
 
-ARG GIT_SHA
-ARG APP_VERSION
-RUN set -eux; \
-    STAMP=""; \
-    [ -n "$GIT_SHA" ] && STAMP="$STAMP -p:SourceRevisionId=$GIT_SHA"; \
-    [ -n "$APP_VERSION" ] && STAMP="$STAMP -p:MinVerVersionOverride=$APP_VERSION"; \
-    dotnet publish EggIncTools.Web/EggIncTools.Web.csproj -c Release -o /app/publish $STAMP
+ARG BUILD_HEIGHT
+ARG BUILD_SHA
+RUN BUILD_HEIGHT="$BUILD_HEIGHT" BUILD_SHA="$BUILD_SHA" \
+    dotnet publish EggIncTools.Web/EggIncTools.Web.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:11.0.0-rc.1 AS runtime
+ARG BUILD_HEIGHT
+ARG BUILD_SHA
+ENV GIT_SHA=$BUILD_SHA
+ENV APP_VERSION=${BUILD_HEIGHT}.0.0
 WORKDIR /app
 COPY --from=build /app/publish .
 
-ARG GIT_SHA
-ENV GIT_SHA=$GIT_SHA
 EXPOSE 8090
 ENTRYPOINT ["dotnet", "EggIncTools.Web.dll"]
