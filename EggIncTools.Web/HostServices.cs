@@ -98,6 +98,9 @@ internal static class HostServices {
             }
 
             builder.Services.AddAuthentication(EggIdentitySessionDefaults.Scheme).AddEggIdentitySession(session);
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<ISessionTokenSource>(sp =>
+                new SessionTokenSource(sp.GetRequiredService<IHttpContextAccessor>(), session));
         }
 
         builder.Services.AddAuthorizationBuilder()
