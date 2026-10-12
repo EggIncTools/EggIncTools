@@ -5,15 +5,15 @@
 
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-    <PackageVersion Include="EggIdentity.Admin" Version="254.0.0" />
-    <PackageVersion Include="EggIdentity.Auth" Version="254.0.0" />
-    <PackageVersion Include="EggIdentity.Bot" Version="254.0.0" />
-    <PackageVersion Include="EggIdentity.Brand" Version="254.0.0" />
-    <PackageVersion Include="EggIdentity.CodeStyle" Version="254.0.0" />
-    <PackageVersion Include="EggIdentity.Core" Version="254.0.0" />
-    <PackageVersion Include="EggIdentity.Data" Version="254.0.0" />
-    <PackageVersion Include="EggIdentity.UI" Version="254.0.0" />
-    <PackageVersion Include="EggIdentity.Web" Version="254.0.0" />
+    <PackageVersion Include="EggIdentity.Admin" Version="255.0.0" />
+    <PackageVersion Include="EggIdentity.Auth" Version="255.0.0" />
+    <PackageVersion Include="EggIdentity.Bot" Version="255.0.0" />
+    <PackageVersion Include="EggIdentity.Brand" Version="255.0.0" />
+    <PackageVersion Include="EggIdentity.CodeStyle" Version="255.0.0" />
+    <PackageVersion Include="EggIdentity.Core" Version="255.0.0" />
+    <PackageVersion Include="EggIdentity.Data" Version="255.0.0" />
+    <PackageVersion Include="EggIdentity.UI" Version="255.0.0" />
+    <PackageVersion Include="EggIdentity.Web" Version="255.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="MinVer" Version="7.0.0" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
