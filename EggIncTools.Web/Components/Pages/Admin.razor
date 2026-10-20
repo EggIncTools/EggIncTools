@@ -11,20 +11,20 @@
 <PageTitle>Admin - EggInc.tools</PageTitle>
 
 @if (!_checked) {
-    <main class="adm"><p class="wb-note">Checking access...</p></main>
+    <main class="adm"><EmptyState Icon="loader-circle" Title="Checking access" Fill="true"/></main>
 } else if (!_isAdmin) {
     <main class="adm">
-        <p class="wb-note">
-            @(_wasRejected ? "That account is not an administrator, so it has been signed out." : "Admin access required.")
-        </p>
-        <nav class="adm-signin" aria-label="Login">
-            @foreach (var provider in SuiteCatalog.Providers) {
-                <a class="btn-mini" href="@SuiteCatalog.ProviderSignInUrl(provider, AdminUrl)">
-                    <Icon Name="@SuiteCatalog.ProviderIcon(provider)"/>
-                    <span>@ProviderName(provider)</span>
-                </a>
-            }
-        </nav>
+        @if (_signInFailed) {
+            <FaultView Kind="FaultKind.SignInFailed" Scope="FaultScope.Page" Home="false">
+                @SignInButtons
+            </FaultView>
+        } else {
+            <EmptyState Icon="lock" Fill="true"
+                        Title="@(_wasRejected ? "Not an administrator" : "Admin access required")"
+                        Hint="@(_wasRejected ? "That account has been signed out. Sign in with an administrator account." : "Sign in with an administrator account.")">
+                @SignInButtons
+            </EmptyState>
+        }
     </main>
 } else {
     <main class="adm">
@@ -52,6 +52,7 @@
     private bool _isAdmin;
     private bool _checked;
     private bool _wasRejected;
+    private bool _signInFailed;
     private int _generation;
     private string? _userId;
     private DeployToastBridge? _deployToasts;
@@ -59,8 +60,18 @@
     private string AdminUrl =>
         Nav.ToAbsoluteUri($"/auth/redeem?returnUrl={Uri.EscapeDataString(Nav.ToAbsoluteUri("/admin").ToString())}").ToString();
 
+    private RenderFragment SignInButtons => @<text>
+        @foreach (var provider in SuiteCatalog.Providers) {
+            <a class="btn-mini" href="@SuiteCatalog.ProviderSignInUrl(provider, AdminUrl)">
+                <Icon Name="@SuiteCatalog.ProviderIcon(provider)"/>
+                <span>@ProviderName(provider)</span>
+            </a>
+        }
+    </text>;
+
     protected override async Task OnInitializedAsync() {
         _wasRejected = Nav.Uri.Contains("rejected=1", StringComparison.Ordinal);
+        _signInFailed = Nav.Uri.Contains("signin=failed", StringComparison.Ordinal);
 
         var user = await Viewer.GetAsync();
         _isAdmin = user.IsAtLeast(UserRole.Admin);

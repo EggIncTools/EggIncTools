@@ -35,7 +35,7 @@
     </div>
 
     @if (Visible.Count == 0) {
-        <p class="wb-note">No settings match.</p>
+        <EmptyState Icon="search" Title="No settings match"/>
     } else {
         <div class="cmp-table-wrap">
             <table class="data-table cmp-table">

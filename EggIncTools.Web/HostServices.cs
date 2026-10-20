@@ -10,6 +10,7 @@ using EggIdentity.Settings.AdminUi;
 using EggIdentity.Settings.Api;
 using EggIdentity.Settings.Store;
 using EggIdentity.Suite.AdminUi;
+using EggIdentity.UI;
 using EggIdentity.UI.Suite;
 using EggIncTools.Web.Bot;
 using EggIncTools.Web.Services;
@@ -107,6 +108,7 @@ internal static class HostServices {
             .AddPolicy(HubSettings.AdminPolicy, policy => policy.RequireAssertion(ctx => ctx.User.IsAtLeast(UserRole.Admin)));
         builder.Services.AddCascadingAuthenticationState();
         builder.Services.AddEggIdentitySuite("tools");
+        builder.Services.AddScoped<IFaultDetailGate, AdminFaultDetailGate>();
         builder.Services.AddEggIdentitySettingsPanel();
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents(o => o.DetailedErrors = !builder.Environment.IsProduction());

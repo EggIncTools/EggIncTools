@@ -11,6 +11,16 @@
   --color-err: #f85149;
   --color-border: #262c3a;
   --color-warn: #f0b232;
+  --color-heat-low: var(--color-panel2);
+  --color-heat-high: var(--color-accent);
+  --color-chart-1: #6366f1;
+  --color-chart-2: #22c55e;
+  --color-chart-3: #f59e0b;
+  --color-chart-4: #a855f7;
+  --color-chart-5: #06b6d4;
+  --color-chart-6: #f43f5e;
+  --color-chart-7: #84cc16;
+  --color-chart-8: #ec4899;
   --color-down: #8992a4;
   --color-github: #a371f7;
   --color-on-accent2: #ffffff;

@@ -2,12 +2,10 @@
 
 <p class="wb-note">Read-only across apps. Open an app to change anything.</p>
 @if (_report is null) {
-    <p class="wb-note">Reading every app...</p>
+    <EmptyState Icon="loader-circle" Title="Reading every app"/>
 } else if (_report.Apps.Count == 0) {
-    <p class="wb-note">
-        No suite.apps row has an admin base URL. Set one on the app, then set
-        ADMIN_SECRET_&lt;NAME&gt; on this host for each app.
-    </p>
+    <EmptyState Icon="server" Title="No apps to compare"
+                Hint="No suite.apps row has an admin base URL. Set one on the app, then set ADMIN_SECRET_<NAME> on this host for each app."/>
 } else {
     <SettingsComparisonPane Report="@_report"/>
 }
