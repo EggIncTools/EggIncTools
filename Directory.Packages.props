@@ -5,15 +5,15 @@
 
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-    <PackageVersion Include="EggIdentity.Admin" Version="282.0.0" />
-    <PackageVersion Include="EggIdentity.Auth" Version="282.0.0" />
-    <PackageVersion Include="EggIdentity.Bot" Version="282.0.0" />
-    <PackageVersion Include="EggIdentity.Brand" Version="282.0.0" />
-    <PackageVersion Include="EggIdentity.CodeStyle" Version="282.0.0" />
-    <PackageVersion Include="EggIdentity.Core" Version="282.0.0" />
-    <PackageVersion Include="EggIdentity.Data" Version="282.0.0" />
-    <PackageVersion Include="EggIdentity.UI" Version="282.0.0" />
-    <PackageVersion Include="EggIdentity.Web" Version="282.0.0" />
+    <PackageVersion Include="EggIdentity.Admin" Version="258.0.0" />
+    <PackageVersion Include="EggIdentity.Auth" Version="258.0.0" />
+    <PackageVersion Include="EggIdentity.Bot" Version="258.0.0" />
+    <PackageVersion Include="EggIdentity.Brand" Version="258.0.0" />
+    <PackageVersion Include="EggIdentity.CodeStyle" Version="258.0.0" />
+    <PackageVersion Include="EggIdentity.Core" Version="258.0.0" />
+    <PackageVersion Include="EggIdentity.Data" Version="258.0.0" />
+    <PackageVersion Include="EggIdentity.UI" Version="258.0.0" />
+    <PackageVersion Include="EggIdentity.Web" Version="258.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="xunit" Version="2.9.3" />
