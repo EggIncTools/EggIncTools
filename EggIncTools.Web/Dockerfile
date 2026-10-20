@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM mcr.microsoft.com/dotnet/sdk:11.0.100-rc.1 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0.100-rc.2 AS build
 WORKDIR /src
 ENV NUGET_PACKAGES=/root/.nuget/packages
 
@@ -21,7 +21,7 @@ ARG BUILD_SHA
 RUN BUILD_HEIGHT="$BUILD_HEIGHT" BUILD_SHA="$BUILD_SHA" \
     dotnet publish EggIncTools.Web/EggIncTools.Web.csproj -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:11.0.0-rc.1 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:11.0.0-rc.2 AS runtime
 ARG BUILD_HEIGHT
 ARG BUILD_SHA
 ENV GIT_SHA=$BUILD_SHA
